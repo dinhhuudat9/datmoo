@@ -1,5 +1,12 @@
+const LOCAL_API_BASE_URL = "http://localhost:4000/api";
+const PRODUCTION_API_BASE_URL = "https://server-datdev-shopmmo.onrender.com/api";
+const isLocalEnvironment = ["localhost", "127.0.0.1"].includes(
+  window.location.hostname,
+);
+
 window.API_BASE_URL =
-  window.WINTER_CLOUD_SHOP_API || "https://server-datdev-shopmmo.onrender.com";
+  window.WINTER_CLOUD_SHOP_API ||
+  (isLocalEnvironment ? LOCAL_API_BASE_URL : PRODUCTION_API_BASE_URL);
 
 let currentCategory = "all";
 
