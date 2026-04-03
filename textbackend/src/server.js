@@ -4,6 +4,7 @@ const cors = require("cors");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const path = require("path");
 
 const { initMainBot } = require("./bots/mainBot");
 const { initSecondaryBot } = require("./bots/secondaryBot");
@@ -18,6 +19,9 @@ const siteRoutes = require("./routes/site");
 
 const app = express();
 const port = Number(process.env.PORT || 4000);
+const frontendRoot = path.resolve(__dirname, "..", "..");
+const frontendIndexPath = path.join(frontendRoot, "index.html");
+const frontendAssetsPath = path.join(frontendRoot, "assets");
 const allowedOrigins = String(process.env.CORS_ORIGIN || "")
   .split(",")
   .map((item) => item.trim())
@@ -75,6 +79,16 @@ app.use(
     limit: process.env.JSON_BODY_LIMIT || "6mb",
   }),
 );
+app.use(
+  "/assets",
+  express.static(frontendAssetsPath, {
+    fallthrough: false,
+  }),
+);
+
+app.get("/", (req, res) => {
+  res.sendFile(frontendIndexPath);
+});
 
 app.get("/health", (req, res) => {
   res.json({
