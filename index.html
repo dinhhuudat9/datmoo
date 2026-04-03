@@ -1,0 +1,1211 @@
+﻿<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>🐾 HuuDatDev | Winter Cloud Shop</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Fredoka+One&family=Pacifico&family=Dancing+Script:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Quicksand", sans-serif;
+        background: radial-gradient(
+          circle at 10% 20%,
+          #0f0c29,
+          #302b63,
+          #24243e
+        );
+        color: #fff;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .animated-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(125deg, #ff9a9e, #fad0c4, #fad0c4, #ffdde1);
+        background-size: 400% 400%;
+        animation: gradientFlow 15s ease infinite;
+        z-index: -2;
+        opacity: 0.25;
+      }
+      @keyframes gradientFlow {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 200, 220, 0.6);
+        border-radius: 2rem;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        transition: all 0.2s;
+      }
+      .btn-glow {
+        background: linear-gradient(135deg, #ff6a88, #ff99ac);
+        border: none;
+        border-radius: 3rem;
+        padding: 0.8rem 1.8rem;
+        font-weight: bold;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
+        letter-spacing: 1px;
+      }
+      .btn-glow:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 25px #ff69b4;
+      }
+      .dog-loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #1a1a2ecc;
+        backdrop-filter: blur(8px);
+        z-index: 10000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        transition: opacity 0.2s ease;
+        visibility: hidden;
+        opacity: 0;
+      }
+      .dog-loader-overlay.active {
+        visibility: visible;
+        opacity: 1;
+      }
+      .dog-loader {
+        text-align: center;
+        animation: bounceDog 0.6s infinite alternate;
+      }
+      .dog-loader i {
+        font-size: 90px;
+        filter: drop-shadow(0 0 15px #ffa5c0);
+        color: #ffc0cb;
+      }
+      @keyframes bounceDog {
+        0% {
+          transform: translateY(0px);
+        }
+        100% {
+          transform: translateY(-20px);
+        }
+      }
+      .floating-heart {
+        position: fixed;
+        bottom: -20px;
+        font-size: 1.5rem;
+        pointer-events: none;
+        z-index: 9999;
+        animation: floatUp 6s linear forwards;
+      }
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      nav {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 92%;
+        max-width: 1300px;
+        background: rgba(10, 10, 30, 0.75);
+        backdrop-filter: blur(15px);
+        border-radius: 60px;
+        padding: 0.4rem 1rem;
+        z-index: 1000;
+        border: 1px solid rgba(255, 180, 200, 0.8);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+      .logo {
+        font-family: "Pacifico", cursive;
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, #ffdde1, #ff9a9e);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .logo:hover {
+        filter: drop-shadow(0 0 6px #ff88aa);
+      }
+      .nav-links a {
+        color: #ffe6f0;
+        font-weight: 600;
+        margin: 0 0.7rem;
+        font-size: 0.9rem;
+        transition: 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+        position: relative;
+      }
+      .nav-links a:hover {
+        color: #ffb3c6;
+        text-shadow: 0 0 8px #ff88aa;
+      }
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 0%;
+        height: 2px;
+        background: #ff88bb;
+        transition: 0.3s;
+      }
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+      .wallet-card {
+        background: rgba(255, 215, 230, 0.25);
+        border-radius: 40px;
+        padding: 0.4rem 1rem;
+        font-weight: bold;
+        font-size: 0.85rem;
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .wallet-card:hover {
+        background: rgba(255, 200, 220, 0.4);
+        transform: scale(1.02);
+      }
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+      .product-card {
+        background: rgba(30, 25, 55, 0.65);
+        backdrop-filter: blur(12px);
+        border-radius: 2rem;
+        padding: 1.6rem;
+        transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        border: 1px solid rgba(255, 160, 190, 0.5);
+        cursor: pointer;
+      }
+      .product-card:hover {
+        transform: translateY(-10px);
+        border-color: #ff88bb;
+        box-shadow: 0 25px 35px -12px rgba(255, 100, 150, 0.5);
+        background: rgba(40, 35, 70, 0.75);
+      }
+      .filter-btn {
+        background: rgba(255, 210, 230, 0.2);
+        border: 1px solid #ffb6c7;
+        border-radius: 40px;
+        padding: 0.6rem 1.4rem;
+        font-weight: 600;
+        transition: 0.2s;
+        cursor: pointer;
+        color: white;
+      }
+      .filter-btn.active,
+      .filter-btn:hover {
+        background: linear-gradient(135deg, #ff88aa, #ff5e8e);
+        border-color: transparent;
+        box-shadow: 0 5px 12px #ff5e8e;
+      }
+      .history-item {
+        background: rgba(255, 220, 240, 0.12);
+        border-radius: 1.5rem;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 6px solid #ff88bb;
+        backdrop-filter: blur(4px);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        transition: 0.2s;
+      }
+      .download-btn {
+        background: #ff7aa2;
+        border: none;
+        border-radius: 40px;
+        padding: 0.4rem 1.2rem;
+        font-weight: bold;
+        color: white;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .download-btn:hover {
+        background: #ff5e8e;
+        transform: scale(1.02);
+      }
+      .chatbot-widget {
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+        width: 340px;
+        z-index: 10001;
+        display: none;
+      }
+      .chatbot-window {
+        background: rgba(20, 15, 45, 0.96);
+        backdrop-filter: blur(18px);
+        border-radius: 2rem;
+        border: 1px solid #ff99cc;
+        overflow: hidden;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        z-index: 20000;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-content {
+        background: rgba(30, 25, 60, 0.92);
+        border-radius: 2rem;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        border: 1px solid #ff88bb;
+      }
+      input,
+      textarea,
+      select {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid #ffb7c7;
+        border-radius: 2rem;
+        padding: 0.8rem 1rem;
+        color: white;
+        width: 100%;
+        margin: 0.5rem 0;
+        transition: 0.2s;
+      }
+      input:focus,
+      textarea:focus {
+        border-color: #ff88bb;
+        outline: none;
+        box-shadow: 0 0 8px #ff88aa;
+      }
+      .error-msg {
+        color: #ff8888;
+        font-size: 0.85rem;
+        margin: 0.5rem 0;
+        padding: 0.5rem;
+        background: rgba(255, 0, 0, 0.2);
+        border-radius: 1rem;
+        text-align: center;
+      }
+      footer {
+        background: #0a071a;
+        padding: 2rem;
+        text-align: center;
+        border-top: 1px solid #ff88bb60;
+        margin-top: 3rem;
+      }
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+        .chatbot-widget {
+          width: 300px;
+        }
+      }
+      section {
+        scroll-margin-top: 110px;
+        transition: all 0.2s;
+      }
+      .section-title {
+        font-family: "Dancing Script", cursive;
+        font-size: 2.2rem;
+        text-shadow: 0 0 8px #ff88aa;
+      }
+      .big-announce {
+        background: rgba(15, 20, 45, 0.7);
+        backdrop-filter: blur(20px);
+        border-radius: 2rem;
+        padding: 2rem;
+        margin: 1rem auto 2rem;
+        max-width: 1300px;
+        border: 1px solid rgba(255, 180, 200, 0.6);
+        box-shadow:
+          0 25px 45px -12px rgba(0, 0, 0, 0.5),
+          0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        position: relative;
+        overflow: hidden;
+      }
+      .big-announce::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          circle at 20% 30%,
+          rgba(255, 136, 187, 0.15),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .big-announce:hover {
+        transform: translateY(-5px);
+        border-color: #ff99bb;
+        box-shadow:
+          0 35px 55px -15px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(255, 200, 220, 0.3) inset;
+      }
+      .announce-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.8rem;
+        border-bottom: 2px solid rgba(255, 136, 187, 0.5);
+        padding-bottom: 0.8rem;
+      }
+      .announce-header i {
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #ffb3c6, #ff6a88);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: pulseIcon 2s infinite;
+      }
+      @keyframes pulseIcon {
+        0% {
+          opacity: 0.8;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.05);
+          text-shadow: 0 0 10px #ff88bb;
+        }
+        100% {
+          opacity: 0.8;
+          transform: scale(1);
+        }
+      }
+      .announce-header h2 {
+        font-size: 1.9rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #fff, #ffd9e6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        letter-spacing: -0.5px;
+        margin: 0;
+      }
+      .announce-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+      .info-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 1.5rem;
+        padding: 1.2rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 160, 190, 0.3);
+        backdrop-filter: blur(4px);
+      }
+      .info-card:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: #ff88bb;
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px -10px rgba(255, 100, 150, 0.3);
+      }
+      .info-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-left: 4px solid #ff88bb;
+        padding-left: 12px;
+      }
+      .info-card h3 i {
+        color: #ff99bb;
+        font-size: 1.2rem;
+      }
+      .info-card ul {
+        list-style: none;
+        padding-left: 0;
+      }
+      .info-card li {
+        margin: 0.7rem 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.95rem;
+      }
+      .info-card li i {
+        width: 28px;
+        color: #ff99bb;
+        transition: transform 0.2s;
+      }
+      .info-card li:hover i {
+        transform: scale(1.1);
+      }
+      .link-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 136, 187, 0.2);
+        border-radius: 40px;
+        padding: 0.3rem 1rem;
+        margin: 0.2rem 0;
+        transition: 0.2s;
+        text-decoration: none;
+        color: #ffd9e6;
+        font-weight: 500;
+      }
+      .link-badge i {
+        font-size: 0.9rem;
+      }
+      .link-badge:hover {
+        background: #ff88bb;
+        color: white;
+        transform: translateX(5px);
+      }
+      .divider-glow {
+        height: 2px;
+        background: linear-gradient(90deg, #ff88bb, #ffc0cb, transparent);
+        margin: 1.8rem 0;
+        width: 100%;
+      }
+      .quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+      }
+      .quick-btn {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 136, 187, 0.2),
+          rgba(255, 105, 180, 0.1)
+        );
+        border-radius: 60px;
+        padding: 0.6rem 1.4rem;
+        font-weight: 600;
+        transition: 0.2s;
+        border: 1px solid rgba(255, 136, 187, 0.5);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .quick-btn:hover {
+        background: linear-gradient(135deg, #ff88aa, #ff5e8e);
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 12px #ff5e8e;
+      }
+      .inline-highlight {
+        background: linear-gradient(120deg, #ff88bb, #ffa0c0);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-weight: 800;
+      }
+      .demo-media {
+        margin-top: 1rem;
+        text-align: center;
+      }
+      .demo-media img,
+      .demo-media video {
+        max-width: 100%;
+        max-height: 280px;
+        border-radius: 1rem;
+        border: 1px solid #ff88bb;
+        box-shadow: 0 0 15px rgba(255, 136, 187, 0.4);
+      }
+      .file-upload-note {
+        font-size: 0.75rem;
+        color: #ffbbcc;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="animated-bg"></div>
+
+    <div id="dogLoader" class="dog-loader-overlay">
+      <div class="dog-loader">
+        <i class="fas fa-dog"></i>
+        <i class="fas fa-paw" style="font-size: 2rem; margin-top: 10px"></i>
+        <h2 id="loaderText" style="margin-top: 20px">🐕 Đang xử lý... ☁️</h2>
+      </div>
+    </div>
+
+    <div
+      style="
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(8px);
+        border-radius: 50px;
+        padding: 8px 18px;
+        z-index: 10000;
+        display: flex;
+        gap: 12px;
+      "
+    >
+      <i class="fas fa-music" style="color: #ffb7c7"></i>
+      <span>🎵 Music on :>></span>
+      <i id="playPauseBtn" class="fas fa-play" style="cursor: pointer"></i>
+    </div>
+    <audio id="bgMusic" loop preload="auto">
+      <source
+        src="https://www.tiktok.com/@nhanlyrics03/video/7621700653051546901?is_from_webapp=1&sender_device=pc&web_id=7599899325494085121"
+        type="audio/mpeg"
+      />
+    </audio>
+
+    <nav>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <div class="logo" onclick="navigateWithLoader('home')">
+          🐾 HuuDatDev Shop
+        </div>
+        <ul
+          class="nav-links"
+          style="display: flex; gap: 0.8rem; list-style: none"
+        >
+          <li><a onclick="navigateWithLoader('home')">🏠 Trang chủ</a></li>
+          <li><a onclick="navigateWithLoader('products')">📦 Sản phẩm</a></li>
+          <li><a onclick="navigateWithLoader('qrlove')">💖 QR Yêu</a></li>
+          <li><a onclick="navigateWithLoader('bank')">💰 Nạp tiền</a></li>
+          <li><a onclick="navigateWithLoader('history')">📜 Lịch sử</a></li>
+          <li><a onclick="navigateWithLoader('admin')">👑 Admin</a></li>
+        </ul>
+        <div style="display: flex; gap: 0.8rem">
+          <div
+            class="wallet-card"
+            id="walletDisplay"
+            style="display: none"
+            onclick="navigateWithLoader('history')"
+          >
+            <i class="fas fa-coins"></i> <span id="walletAmount">0</span>đ
+          </div>
+          <button
+            class="btn-glow"
+            id="authBtn"
+            onclick="openAuthModal()"
+            style="padding: 0.5rem 1rem; font-size: 0.85rem"
+          >
+            <i class="fas fa-paw"></i> Đăng nhập
+          </button>
+          <button
+            class="btn-glow"
+            id="logoutBtn"
+            style="
+              display: none;
+              background: #6c5b7b;
+              padding: 0.5rem 1rem;
+              font-size: 0.85rem;
+            "
+            onclick="logout()"
+          >
+            Thoát
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main style="padding-top: 110px">
+      <!-- THANH THÔNG BÁO CHUYÊN NGHIỆP -->
+      <div class="big-announce glass">
+        <div class="announce-header">
+          <i class="fas fa-bullhorn"></i>
+          <h2>Chào mừng bạn đến với HuuDatDev Shop</h2>
+        </div>
+
+        <div class="announce-grid">
+          <!-- Cột dịch vụ chính -->
+          <div class="info-card">
+            <h3><i class="fas fa-code"></i> Dịch vụ nổi bật</h3>
+            <ul>
+              <li>
+                <i class="fas fa-gem"></i> Mã nguồn xịn xò, chất lượng cao
+              </li>
+              <li><i class="fas fa-sync-alt"></i> Cập nhật code liên tục</li>
+              <li>
+                <i class="fas fa-chalkboard-teacher"></i> Web share tutorial VIP
+              </li>
+              <li>
+                <i class="fas fa-chart-line"></i> MMO Studio - Kiếm tiền & tạo
+                website
+              </li>
+            </ul>
+          </div>
+
+          <!-- Cột liên hệ & cộng đồng -->
+          <div class="info-card">
+            <h3><i class="fas fa-address-card"></i> Kết nối với chúng tôi</h3>
+            <ul style="display: flex; flex-wrap: wrap; gap: 12px">
+              <li>
+                <a
+                  class="link-badge"
+                  href="#"
+                  onclick="
+                    window.open(
+                      'https://www.tiktok.com/@_hdat_16?_r=1&_d=secCgYIASAHKAESPgo8FK1maH4Z3q3xe4KeMlMDU%2BYhCtIKGNWQTny7Qxk9%2BhQc6nrkFdoaRqSiQvF25vhirfGw%2BEaR6JTRVi52GgA%3D&_svg=1&checksum=85796cc5b4f41d45b7917d82b669d623948f347878bc6c61bb96b14eda9b5cb4&item_author_type=1&reflow_sign_scene=7&rgssign=8.1.tg3aRWdvkn4PNQblkrAK1A&sec_uid=MS4wLjABAAAAGuWZNduuUAul25D8ghvVpN5eV5PyFvTeDx_nd2BjKmwjSVhykN7rppzOUjUwdIPU&sec_user_id=MS4wLjABAAAAGuWZNduuUAul25D8ghvVpN5eV5PyFvTeDx_nd2BjKmwjSVhykN7rppzOUjUwdIPU&share_app_id=1180&share_author_id=7611804300507874324&share_link_id=607FD2C3-94EA-4E2C-BF50-7EE00C491031&share_region=VN&share_scene=1&sharer_language=vi&social_share_type=4&source=h5_t&timestamp=1775059964&tt_from=copy&u_code=f27i7l749mkil5&ug_btm=b8727%2Cb0&user_id=7611804300507874324&utm_campaign=client_share&utm_medium=ios&utm_source=copy',
+                    )
+                  "
+                  ><i class="fab fa-tiktok"></i> TikTok</a
+                >
+              </li>
+              <li>
+                <a
+                  class="link-badge"
+                  href="#"
+                  onclick="window.open('https://www.facebook.com/dinhhuudat8/')"
+                  ><i class="fab fa-facebook"></i> Facebook</a
+                >
+              </li>
+              <li>
+                <a
+                  class="link-badge"
+                  href="#"
+                  onclick="window.open('https://www.youtube.com/')"
+                  ><i class="fab fa-youtube"></i> YouTube</a
+                >
+              </li>
+              <li>
+                <a
+                  class="link-badge"
+                  href="#"
+                  onclick="
+                    Swal.fire('zalo chat', 'https://zalo.me/g/...', 'info')
+                  "
+                  ><i class="fab fa-zalo"></i>Zalo</a
+                >
+              </li>
+            </ul>
+            <div class="divider-glow" style="margin: 1rem 0"></div>
+            <div>
+              <i class="fas fa-qrcode"></i> <strong>Tạo mã QR free:</strong>
+              <a class="link-badge" href="#" onclick="generateQRPopup()"
+                >Tạo ở đây <i class="fas fa-arrow-right"></i
+              ></a>
+            </div>
+          </div>
+
+          <!-- Cột tiện ích và ưu đãi -->
+          <div class="info-card">
+            <h3><i class="fas fa-gift"></i> Ưu đãi & tiện ích</h3>
+            <ul>
+              <li>
+                <i class="fas fa-link"></i>
+                <strong>Kiểm tiền vượt link:</strong>
+                <a
+                  class="link-badge"
+                  href="#"
+                  onclick="
+                    Swal.fire(
+                      'Link rút gọn VIP',
+                      'https://my.link4m.com/',
+                      'info',
+                    )
+                  "
+                  >LINK RÚT GỌN VIP</a
+                >
+              </li>
+              <li>
+                <i class="fas fa-gift"></i> <strong>Cập nhật kèo FREE</strong>
+                <a
+                  class="link-badge"
+                  href="#"
+                  onclick="
+                    Swal.fire('Kèo Free', 'Cập nhật liên tục tại đây', 'info')
+                  "
+                  >Xem ngay</a
+                >
+              </li>
+              <li>
+                <i class="fas fa-robot"></i> <strong>WEB CHAT AI 24/7</strong>
+                <a
+                  class="link-badge"
+                  href="#"
+                  onclick="Swal.fire('Chat AI', 'Chat với AI 24/7', 'info')"
+                  >Dùng thử</a
+                >
+              </li>
+              <li>
+                <i class="fas fa-heart"></i>
+                <strong>WEB TẠO QR TRÁI TIM</strong>
+                <a
+                  class="link-badge"
+                  href="#"
+                  onclick="navigateWithLoader('qrlove')"
+                  >Tại đây</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="divider-glow"></div>
+
+        <div class="quick-actions">
+          <div class="quick-btn" onclick="navigateWithLoader('products')">
+            <i class="fas fa-store"></i> Khám phá sản phẩm
+          </div>
+          <div class="quick-btn" onclick="navigateWithLoader('bank')">
+            <i class="fas fa-coins"></i> Nạp tiền ngay
+          </div>
+          <div
+            class="quick-btn"
+            onclick="window.open('https://www.facebook.com/dinhhuudat8/')"
+          >
+            <i class="fab fa-facebook-messenger"></i> Hỗ trợ 24/7
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="homeSection"
+        class="glass"
+        style="
+          max-width: 1300px;
+          margin: 0 auto 2rem;
+          padding: 2rem;
+          text-align: center;
+        "
+      >
+        <h1
+          style="
+            font-family: &quot;Fredoka One&quot;;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #fff0f5, #ffc0cb);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+          "
+        >
+          ❄️ Huu Dat Dev Shop MMO ❄️
+        </h1>
+        <p style="font-size: 1.3rem; margin: 1rem 0">
+          ☁️ Nơi chia sẻ code giá rẻ & tài liệu lập trình chất lượng ☁️
+        </p>
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+          "
+        >
+          <div
+            class="btn-glow"
+            style="padding: 0.5rem 1.2rem"
+            onclick="window.open('https://www.facebook.com/dinhhuudat8/')"
+          >
+            <i class="fab fa-facebook"></i> Facebook
+          </div>
+          <div
+            class="btn-glow"
+            style="padding: 0.5rem 1.2rem"
+            onclick="copyZalo()"
+          >
+            <i class="fab fa-zalo"></i> Zalo 0986327665
+          </div>
+        </div>
+      </div>
+
+      <div style="max-width: 600px; margin: 0 auto 1rem">
+        <div class="glass" style="display: flex; padding: 0.3rem">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="🔍 Tìm kiếm code, tool, web..."
+            style="
+              flex: 1;
+              background: none;
+              border: none;
+              padding: 12px;
+              color: white;
+            "
+          />
+          <button class="btn-glow" onclick="searchProductsWithLoader()">
+            <i class="fas fa-search"></i> Tìm
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="categoryFilters"
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 12px;
+          margin: 1rem auto;
+        "
+      ></div>
+
+      <section id="products" style="padding: 2rem">
+        <div
+          class="section-container"
+          style="max-width: 1400px; margin: 0 auto"
+        >
+          <h2
+            class="glass section-title"
+            style="
+              text-align: center;
+              padding: 0.8rem;
+              width: fit-content;
+              margin: 0 auto;
+            "
+          >
+            😘 Bộ Sản Phẩm Code & Khóa Lập Trình Khi Nhấn Xác Mua Sản Phẩm Hãy
+            Đợi Trong Giây Lát Để Load SP(●'◡'●)
+          </h2>
+          <div class="products-grid" id="productsGrid"></div>
+        </div>
+      </section>
+
+      <section id="qrlove" style="padding: 2rem">
+        <div
+          class="glass"
+          style="
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+          "
+        >
+          <h3 class="section-title">
+            <i class="fas fa-heart" style="color: #ff88bb"></i> TẠO QR HÌNH TRÁI
+            TIM
+          </h3>
+          <input
+            id="qrHeartContent"
+            placeholder="Nhập link hoặc lời nhắn yêu thương..."
+            class="glass"
+            style="width: 100%; margin: 1rem 0"
+          />
+          <button class="btn-glow" onclick="generateHeartQR()">
+            <i class="fas fa-qrcode"></i> Tạo QR Cute
+          </button>
+          <div id="qrHeartResult" style="display: none; margin-top: 1rem">
+            <div id="qrCodeContainer"></div>
+            <button class="btn-glow" onclick="downloadHeartQR()">Tải QR</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="bank" style="padding: 2rem">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1100px;
+            margin: auto;
+          "
+        >
+          <div class="glass" style="padding: 1.8rem">
+            <h3>🏦 THÔNG TIN NẠP</h3>
+            <p>
+              Ngân hàng: BIDV<br />Chủ TK: ĐINH HỮU ĐẠT<br />Số TK:
+              8826353645<br />Nội dung: NAP + mã giao dịch<br />💬 Nếu tiền chưa
+              vào liên hệ shop ngay nhé<br />📌 Shop nhận làm các dịch vụ liên
+              quan mxh
+            </p>
+          </div>
+          <div class="glass" style="padding: 1.8rem">
+            <img
+              src="https://img.vietqr.io/image/BIDV-8826353645-compact.png"
+              width="140"
+              style="margin-bottom: 1rem"
+            />
+            <input
+              id="depositAmount"
+              placeholder="Số tiền (VNĐ)"
+              type="number"
+            />
+            <input id="depositPhone" placeholder="Số điện thoại" />
+            <button class="btn-glow" onclick="requestDepositWithLoader()">
+              Gửi yêu cầu nạp
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="history" style="padding: 2rem">
+        <div
+          class="glass"
+          style="max-width: 1000px; margin: auto; padding: 2rem"
+        >
+          <h3 class="section-title">📜 LỊCH SỬ MUA HÀNG VÀ TẢI SẢN PHẨM</h3>
+          <div id="historyList"></div>
+        </div>
+      </section>
+
+      <section id="adminPanel" style="display: none; padding: 2rem">
+        <div
+          class="glass"
+          style="padding: 2rem; max-width: 1200px; margin: auto"
+        >
+          <h3>👑 ADMIN PANEL (Quản trị đám mây)</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+            <input id="prodName" placeholder="Tên sản phẩm" />
+            <input id="prodPrice" placeholder="Giá (VNĐ)" type="number" />
+            <select id="prodCategory">
+              <option>python</option>
+              <option>website</option>
+              <option>love</option>
+              <option>qrlove</option>
+              <option>card</option>
+            </select>
+            <input
+              id="prodIcon"
+              placeholder="Icon (ex: fab fa-python)"
+              value="fas fa-code"
+            />
+            <textarea id="prodDesc" placeholder="Mô tả ngắn"></textarea>
+            <input
+              id="prodDownloadLink"
+              placeholder="🔗 Link tải (Google Drive, Mediafire...)"
+            />
+            <div>
+              <label style="font-weight: 600"
+                >📂 Demo (tải ảnh/video lên, tối đa 1GB):</label
+              >
+              <input type="file" id="prodDemoFile" accept="image/*,video/*" />
+              <div class="file-upload-note">
+                <i class="fas fa-cloud-upload-alt"></i> Chọn file ảnh/video
+                (dung lượng < 1GB) để làm demo thay vì link
+              </div>
+            </div>
+          </div>
+          <button
+            class="btn-glow"
+            style="margin-top: 1rem"
+            onclick="addProductWithLoader()"
+          >
+            ➕ Thêm sản phẩm
+          </button>
+          <button
+            class="btn-glow"
+            style="margin-top: 0.5rem"
+            onclick="checkProductsList()"
+          >
+            📋 Kiểm tra sản phẩm
+          </button>
+          <div
+            id="adminProductsGrid"
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+              gap: 1rem;
+              margin-top: 2rem;
+            "
+          ></div>
+          <div>
+            <h3>⏳ Giao dịch chờ duyệt</h3>
+            <div id="pendingTransactions"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>
+        🐕 HuuDatDev — Shop mã nguồn rẻ nhất hiện nay liên hệ nếu có những gì
+        thắc mắc
+      </p>
+      <div style="margin-top: 1rem">
+        <i class="fas fa-heart" style="color: #ff88bb"></i> Made with love for
+        winter <i class="fas fa-snowflake"></i>
+      </div>
+    </footer>
+
+    <div id="authModal" class="modal">
+      <div class="modal-content">
+        <div style="display: flex; justify-content: space-between">
+          <h3>🐩 WINTER ACCESS</h3>
+          <button
+            onclick="closeAuthModal()"
+            style="background: none; border: none; font-size: 2rem"
+          >
+            &times;
+          </button>
+        </div>
+        <div style="display: flex; gap: 1rem; margin: 1rem 0">
+          <button class="btn-glow" onclick="switchAuth('login')">
+            ĐĂNG NHẬP</button
+          ><button class="btn-glow" onclick="switchAuth('register')">
+            ĐĂNG KÝ
+          </button>
+        </div>
+        <div id="loginForm">
+          <div id="loginError" class="error-msg" style="display: none"></div>
+          <input id="loginUsername" placeholder="Tên đăng nhập" />
+          <input id="loginPassword" type="password" placeholder="Mật khẩu" />
+          <button class="btn-glow" onclick="login()">Đăng nhập</button>
+        </div>
+        <div id="registerForm" style="display: none">
+          <div id="registerError" class="error-msg" style="display: none"></div>
+          <input id="regUsername" placeholder="Tên đăng nhập" />
+          <input id="regEmail" placeholder="Email" />
+          <input id="regPassword" type="password" placeholder="Mật khẩu" />
+          <input
+            id="regConfirm"
+            type="password"
+            placeholder="Xác nhận mật khẩu"
+          />
+          <button class="btn-glow" onclick="register()">
+            Đăng ký (+2000đ)
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="buyModal" class="modal">
+      <div class="modal-content">
+        <h3 id="buyProductName"></h3>
+        <p id="buyProductPrice" style="font-size: 2rem"></p>
+        <p>Số dư: <strong id="currentBalance">0</strong>đ</p>
+        <button class="btn-glow" onclick="confirmBuyWithLoader()">
+          Xác nhận mua</button
+        ><button class="btn-glow" onclick="closeBuyModal()">Hủy</button>
+      </div>
+    </div>
+    <div id="demoModal" class="modal">
+      <div class="modal-content">
+        <div style="display: flex; justify-content: space-between">
+          <h3>✨ Xem trước sản phẩm</h3>
+          <button
+            onclick="closeDemoModal()"
+            style="background: none; border: none; font-size: 1.8rem"
+          >
+            &times;
+          </button>
+        </div>
+        <div
+          id="demoContent"
+          class="glass"
+          style="padding: 1.5rem; margin: 1rem 0; text-align: center"
+        ></div>
+        <div id="demoMediaContainer" class="demo-media"></div>
+        <button class="btn-glow" onclick="closeDemoModal()">Đóng</button>
+      </div>
+    </div>
+
+    <div
+      class="chatbot-toggle-btn"
+      style="
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+        width: 55px;
+        height: 55px;
+        background: #ff88bb;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10001;
+        box-shadow: 0 0 15px #ff88bb;
+      "
+    >
+      <i class="fas fa-comment-dots fa-2x"></i>
+    </div>
+    <div class="chatbot-widget" id="chatbotWidget">
+      <div class="chatbot-window">
+        <div
+          class="chatbot-header"
+          style="
+            padding: 12px;
+            background: #ff88bb20;
+            display: flex;
+            justify-content: space-between;
+          "
+        >
+          <span><i class="fas fa-dog"></i> WinterBot AI</span
+          ><button
+            id="closeChatbotBtn"
+            style="background: none; border: none; color: white"
+          >
+            ✖
+          </button>
+        </div>
+        <div
+          id="chatbotMessages"
+          style="height: 300px; overflow-y: auto; padding: 12px"
+        ></div>
+        <div
+          id="suggestionButtons"
+          style="display: flex; flex-wrap: wrap; gap: 6px; padding: 8px"
+        ></div>
+        <div style="display: flex">
+          <input
+            id="chatbotInput"
+            placeholder="Hỏi gì về shop..."
+            style="flex: 1; border-radius: 0 0 0 1.5rem"
+          /><button
+            id="sendChatbotBtn"
+            class="btn-glow"
+            style="border-radius: 0 0 1.5rem 0"
+          >
+            Gửi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./assets/js/winter-app.js"></script>
+    <script src="./assets/js/winter-data.js"></script>
+  </body>
+</html>
