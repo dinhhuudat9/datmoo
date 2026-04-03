@@ -1,5 +1,5 @@
 window.API_BASE_URL =
-  window.WINTER_CLOUD_SHOP_API || "http://localhost:4000/api";
+  window.WINTER_CLOUD_SHOP_API || "https://server-datdev-shopmmo.onrender.com/api";
 
 let currentCategory = "all";
 
