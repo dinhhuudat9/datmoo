@@ -1215,5 +1215,28 @@
 
     <script src="./assets/js/winter-app.js"></script>
     <script src="./assets/js/winter-data.js"></script>
+    <script>
+  // Xử lý chọn loại demo: link hoặc upload file
+  document.addEventListener('DOMContentLoaded', function() {
+    const radioLink = document.querySelector('input[name="demoType"][value="link"]');
+    const radioFile = document.querySelector('input[name="demoType"][value="file"]');
+    const linkInput = document.getElementById('prodDemoLink');
+    const fileContainer = document.getElementById('prodDemoFileContainer');
+    if (radioLink && radioFile && linkInput && fileContainer) {
+      function toggleDemoInput() {
+        if (radioFile.checked) {
+          linkInput.style.display = 'none';
+          fileContainer.style.display = 'block';
+        } else {
+          linkInput.style.display = 'block';
+          fileContainer.style.display = 'none';
+        }
+      }
+      radioLink.addEventListener('change', toggleDemoInput);
+      radioFile.addEventListener('change', toggleDemoInput);
+      toggleDemoInput(); // khởi tạo trạng thái ban đầu
+    }
+  });
+</script>
   </body>
 </html>
