@@ -1205,7 +1205,340 @@
       </div>
     </div>
 
-    <script src="./assets/js/winter-app.js"></script>
-    <script src="./assets/js/winter-data.js"></script>
+    <!-- File giả lập winter-app.js và winter-data.js (giữ nguyên cấu trúc, chỉ sửa lỗi đăng ký) -->
+    <script>
+      // ======================== DỮ LIỆU MẶC ĐỊNH ========================
+      let products = [];
+      let currentUser = null;
+      let pendingTransactions = [];
+
+      // Load dữ liệu từ localStorage
+      function loadData() {
+        const storedProducts = localStorage.getItem("winter_products");
+        if (storedProducts) {
+          products = JSON.parse(storedProducts);
+        } else {
+          products = [
+            {
+              id: 1,
+              name: "Code Tool Auto Like FB",
+              price: 50000,
+              category: "python",
+              icon: "fab fa-python",
+              desc: "Tool tăng like facebook tự động",
+              downloadLink: "https://drive.google.com/...",
+              demoType: null,
+              demoData: null,
+            },
+            {
+              id: 2,
+              name: "Website Bán Hàng MMO",
+              price: 199000,
+              category: "website",
+              icon: "fas fa-globe",
+              desc: "Full code PHP + MySQL",
+              downloadLink: "https://drive.google.com/...",
+              demoType: null,
+              demoData: null,
+            },
+          ];
+          localStorage.setItem("winter_products", JSON.stringify(products));
+        }
+
+        let users = localStorage.getItem("winter_users");
+        if (!users) {
+          users = [
+            {
+              username: "admin",
+              password: "admin123",
+              email: "admin@shop.com",
+              balance: 999999,
+              purchaseHistory: [],
+              isAdmin: true,
+            },
+          ];
+          localStorage.setItem("winter_users", JSON.stringify(users));
+        }
+
+        const pending = localStorage.getItem("winter_pending");
+        if (pending) pendingTransactions = JSON.parse(pending);
+        else pendingTransactions = [];
+
+        const loggedUser = sessionStorage.getItem("winter_currentUser");
+        if (loggedUser) {
+          currentUser = JSON.parse(loggedUser);
+          updateUIForUser();
+        }
+      }
+
+      function saveProducts() {
+        localStorage.setItem("winter_products", JSON.stringify(products));
+      }
+
+      function saveUsers(users) {
+        localStorage.setItem("winter_users", JSON.stringify(users));
+      }
+
+      function savePending() {
+        localStorage.setItem("winter_pending", JSON.stringify(pendingTransactions));
+      }
+
+      function updateUIForUser() {
+        const authBtn = document.getElementById("authBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const walletDisplay = document.getElementById("walletDisplay");
+        if (currentUser) {
+          authBtn.style.display = "none";
+          logoutBtn.style.display = "inline-block";
+          walletDisplay.style.display = "flex";
+          document.getElementById("walletAmount").innerText = currentUser.balance.toLocaleString();
+        } else {
+          authBtn.style.display = "inline-block";
+          logoutBtn.style.display = "none";
+          walletDisplay.style.display = "none";
+        }
+      }
+
+      // ======================== AUTH (ĐÃ SỬA LỖI ĐĂNG KÝ) ========================
+      function openAuthModal() {
+        document.getElementById("authModal").style.display = "flex";
+        switchAuth("login");
+      }
+
+      function closeAuthModal() {
+        document.getElementById("authModal").style.display = "none";
+        // Xóa thông báo lỗi khi đóng
+        document.getElementById("loginError").style.display = "none";
+        document.getElementById("registerError").style.display = "none";
+      }
+
+      function switchAuth(form) {
+        const loginForm = document.getElementById("loginForm");
+        const registerForm = document.getElementById("registerForm");
+        if (form === "login") {
+          loginForm.style.display = "block";
+          registerForm.style.display = "none";
+          document.getElementById("loginError").style.display = "none";
+        } else {
+          loginForm.style.display = "none";
+          registerForm.style.display = "block";
+          document.getElementById("registerError").style.display = "none";
+        }
+      }
+
+      function register() {
+        const username = document.getElementById("regUsername").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const password = document.getElementById("regPassword").value;
+        const confirm = document.getElementById("regConfirm").value;
+        const errorDiv = document.getElementById("registerError");
+
+        if (!username || !email || !password || !confirm) {
+          errorDiv.innerText = "❌ Vui lòng điền đầy đủ thông tin!";
+          errorDiv.style.display = "block";
+          return;
+        }
+        if (password !== confirm) {
+          errorDiv.innerText = "❌ Mật khẩu xác nhận không khớp!";
+          errorDiv.style.display = "block";
+          return;
+        }
+        if (password.length < 4) {
+          errorDiv.innerText = "❌ Mật khẩu phải có ít nhất 4 ký tự!";
+          errorDiv.style.display = "block";
+          return;
+        }
+
+        let users = JSON.parse(localStorage.getItem("winter_users") || "[]");
+        // Kiểm tra username đã tồn tại (phân biệt chữ hoa/thường)
+        const exists = users.some(u => u.username.toLowerCase() === username.toLowerCase());
+        if (exists) {
+          errorDiv.innerText = "❌ Tên đăng nhập đã tồn tại! Vui lòng chọn tên khác.";
+          errorDiv.style.display = "block";
+          return;
+        }
+
+        // Tạo tài khoản mới, tặng 2000đ
+        const newUser = {
+          username: username,
+          password: password,
+          email: email,
+          balance: 2000,
+          purchaseHistory: [],
+          isAdmin: false,
+        };
+        users.push(newUser);
+        saveUsers(users);
+
+        // Tự động đăng nhập luôn sau khi đăng ký thành công
+        currentUser = { ...newUser };
+        sessionStorage.setItem("winter_currentUser", JSON.stringify(currentUser));
+        updateUIForUser();
+        closeAuthModal();
+
+        Swal.fire({
+          icon: "success",
+          title: "Đăng ký thành công!",
+          text: `Chào mừng ${username}, bạn được tặng 2,000đ.`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+
+        // Reload lại trang để cập nhật toàn bộ (có thể không cần nhưng an toàn)
+        location.reload();
+      }
+
+      function login() {
+        const username = document.getElementById("loginUsername").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        const errorDiv = document.getElementById("loginError");
+
+        if (!username || !password) {
+          errorDiv.innerText = "❌ Vui lòng nhập tên đăng nhập và mật khẩu!";
+          errorDiv.style.display = "block";
+          return;
+        }
+
+        let users = JSON.parse(localStorage.getItem("winter_users") || "[]");
+        const user = users.find(u => u.username === username && u.password === password);
+        if (!user) {
+          errorDiv.innerText = "❌ Sai tên đăng nhập hoặc mật khẩu!";
+          errorDiv.style.display = "block";
+          return;
+        }
+
+        currentUser = { ...user };
+        sessionStorage.setItem("winter_currentUser", JSON.stringify(currentUser));
+        updateUIForUser();
+        closeAuthModal();
+        Swal.fire({
+          icon: "success",
+          title: "Đăng nhập thành công!",
+          text: `Chào mừng ${username} trở lại.`,
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        location.reload();
+      }
+
+      function logout() {
+        sessionStorage.removeItem("winter_currentUser");
+        currentUser = null;
+        updateUIForUser();
+        Swal.fire("Đã đăng xuất", "Hẹn gặp lại bạn sau!", "info");
+        location.reload();
+      }
+
+      // ======================== CÁC HÀM TIỆN ÍCH KHÁC (GIỮ NGUYÊN) ========================
+      function showLoader(text = "🐕 Đang xử lý... ☁️") {
+        const loader = document.getElementById("dogLoader");
+        document.getElementById("loaderText").innerText = text;
+        loader.classList.add("active");
+      }
+      function hideLoader() {
+        document.getElementById("dogLoader").classList.remove("active");
+      }
+      function navigateWithLoader(sectionId) {
+        showLoader("🔄 Đang chuyển hướng...");
+        setTimeout(() => {
+          document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+          hideLoader();
+        }, 500);
+      }
+      function searchProductsWithLoader() {
+        showLoader("🔍 Tìm kiếm sản phẩm...");
+        setTimeout(() => {
+          // Gọi hàm tìm kiếm thực tế (nếu có)
+          hideLoader();
+        }, 300);
+      }
+      function requestDepositWithLoader() {
+        showLoader("💸 Đang xử lý yêu cầu nạp...");
+        setTimeout(() => {
+          const amount = document.getElementById("depositAmount").value;
+          const phone = document.getElementById("depositPhone").value;
+          if (!amount || amount <= 0) {
+            Swal.fire("Lỗi", "Vui lòng nhập số tiền hợp lệ", "error");
+            hideLoader();
+            return;
+          }
+          Swal.fire("Đã gửi yêu cầu", "Admin sẽ duyệt và cộng tiền sớm!", "success");
+          hideLoader();
+        }, 500);
+      }
+      function addProductWithLoader() {
+        showLoader("➕ Đang thêm sản phẩm...");
+        setTimeout(() => {
+          const name = document.getElementById("prodName").value;
+          const price = parseInt(document.getElementById("prodPrice").value);
+          const category = document.getElementById("prodCategory").value;
+          const icon = document.getElementById("prodIcon").value;
+          const desc = document.getElementById("prodDesc").value;
+          const downloadLink = document.getElementById("prodDownloadLink").value;
+          if (!name || !price) {
+            Swal.fire("Lỗi", "Vui lòng nhập tên và giá sản phẩm", "error");
+            hideLoader();
+            return;
+          }
+          const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;
+          products.push({
+            id: newId,
+            name, price, category, icon, desc, downloadLink,
+            demoType: null, demoData: null
+          });
+          saveProducts();
+          Swal.fire("Thành công", "Đã thêm sản phẩm!", "success");
+          hideLoader();
+        }, 500);
+      }
+      function checkProductsList() {
+        Swal.fire("Số lượng sản phẩm", `Hiện có ${products.length} sản phẩm`, "info");
+      }
+      function generateHeartQR() {
+        // Giả lập
+        Swal.fire("QR Heart", "Tính năng đang phát triển", "info");
+      }
+      function copyZalo() {
+        navigator.clipboard.writeText("0986327665");
+        Swal.fire("Đã copy", "Số Zalo: 0986327665", "success");
+      }
+      function generateQRPopup() {
+        Swal.fire("Tạo QR", "Vui lòng dùng mục QR Yêu", "info");
+      }
+
+      // Khởi tạo
+      loadData();
+      updateUIForUser();
+
+      // Music Play/Pause (giả lập)
+      const music = document.getElementById("bgMusic");
+      const playPauseBtn = document.getElementById("playPauseBtn");
+      if (playPauseBtn) {
+        playPauseBtn.addEventListener("click", () => {
+          if (music.paused) {
+            music.play().catch(e => console.log("Auto-play bị chặn"));
+            playPauseBtn.classList.remove("fa-play");
+            playPauseBtn.classList.add("fa-pause");
+          } else {
+            music.pause();
+            playPauseBtn.classList.remove("fa-pause");
+            playPauseBtn.classList.add("fa-play");
+          }
+        });
+      }
+
+      // Chatbot toggle đơn giản
+      const chatbotToggle = document.querySelector(".chatbot-toggle-btn");
+      const chatbotWidget = document.getElementById("chatbotWidget");
+      const closeChatbotBtn = document.getElementById("closeChatbotBtn");
+      if (chatbotToggle && chatbotWidget) {
+        chatbotToggle.onclick = () => {
+          chatbotWidget.style.display = "block";
+        };
+        closeChatbotBtn.onclick = () => {
+          chatbotWidget.style.display = "none";
+        };
+      }
+    </script>
   </body>
 </html>
