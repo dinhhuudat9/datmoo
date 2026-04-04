@@ -1020,15 +1020,23 @@
               placeholder="🔗 Link tải (Google Drive, Mediafire...)"
             />
             <div>
-              <label style="font-weight: 600"
-                >📂 Demo (tải ảnh/video lên, tối đa 1GB):</label
-              >
-              <input type="file" id="prodDemoFile" accept="image/*,video/*" />
-              <div class="file-upload-note">
-                <i class="fas fa-cloud-upload-alt"></i> Chọn file ảnh/video
-                (dung lượng < 1GB) để làm demo thay vì link
-              </div>
-            </div>
+  <label style="font-weight: 600">🎬 Demo sản phẩm:</label>
+  <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+    <label style="display: flex; align-items: center; gap: 0.3rem;">
+      <input type="radio" name="demoType" value="link" checked> Link URL
+    </label>
+    <label style="display: flex; align-items: center; gap: 0.3rem;">
+      <input type="radio" name="demoType" value="file"> Tải file lên
+    </label>
+  </div>
+  <input type="text" id="prodDemoLink" placeholder="Nhập link demo (YouTube, ảnh, video...)" style="margin-bottom: 0.5rem;" />
+  <div id="prodDemoFileContainer" style="display: none;">
+    <input type="file" id="prodDemoFile" accept="image/*,video/*" />
+    <div class="file-upload-note">
+      <i class="fas fa-cloud-upload-alt"></i> Chọn file ảnh/video (dung lượng < 1GB)
+    </div>
+  </div>
+</div>
           </div>
           <button
             class="btn-glow"
