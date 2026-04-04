@@ -1,438 +1,1662 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>❄️ Winter Cloud Shop | HuuDatDev - Vũ điệu hiệu ứng</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- Canvas Confetti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', 'Space Grotesk', sans-serif;
-      background: #0A0C1A;
-      color: #F0F3FF;
-      overflow-x: hidden;
-      cursor: default;
-    }
-    /* ========== NỀN ĐỘNG SIÊU CẤP ========== */
-    .bg-aura {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 20% 30%, #1A1F3A, #03050C);
-      z-index: -3;
-    }
-    .bg-aura::before {
-      content: '';
-      position: absolute;
-      width: 200%;
-      height: 200%;
-      top: -50%;
-      left: -50%;
-      background: conic-gradient(from 0deg, #ff4d8c30, #8f6eff30, #00c2ff30, #ff4d8c30);
-      animation: rotateSlow 20s infinite linear;
-      z-index: -2;
-    }
-    @keyframes rotateSlow { 100% { transform: rotate(360deg); } }
-    .bg-aura::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(45deg, rgba(255,120,160,0.04) 0px, rgba(255,120,160,0.04) 2px, transparent 2px, transparent 10px);
-      pointer-events: none;
-    }
-    /* particle nền */
-    .particle {
-      position: fixed;
-      background: radial-gradient(circle, #ff8aae, #ff4d7a);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: -1;
-      animation: floatParticle linear infinite;
-    }
-    @keyframes floatParticle {
-      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-      10% { opacity: 0.7; }
-      90% { opacity: 0.7; }
-      100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
-    }
-    /* tuyết & trái tim */
-    .snow-flake, .floating-heart {
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      font-size: 1rem;
-      animation: fall linear forwards;
-    }
-    @keyframes fall {
-      0% { transform: translateY(-20vh) rotate(0deg); opacity: 0.9; }
-      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-    }
-    /* glassmorphism siêu cấp */
-    .glass {
-      background: rgba(18, 22, 45, 0.55);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 130, 180, 0.35);
-      border-radius: 2rem;
-      box-shadow: 0 20px 40px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-      transition: all 0.3s ease;
-    }
-    .glass-card {
-      background: rgba(12, 16, 35, 0.7);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 140, 180, 0.45);
-      border-radius: 1.8rem;
-      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.2);
-      transform-style: preserve-3d;
-      perspective: 1000px;
-    }
-    .glass-card:hover {
-      transform: translateY(-12px) rotateX(3deg) scale(1.02);
-      border-color: #FF8AAE;
-      box-shadow: 0 35px 50px -15px rgba(255, 80, 130, 0.6);
-    }
-    /* nút bấm hiệu ứng đa tầng */
-    .btn-primary {
-      background: linear-gradient(105deg, #FF4D7A, #FF8A5E);
-      border: none;
-      border-radius: 3rem;
-      padding: 0.75rem 1.8rem;
-      font-weight: 700;
-      color: white;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      box-shadow: 0 8px 20px rgba(255, 77, 122, 0.35);
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-primary::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      background: rgba(255,255,255,0.4);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: width 0.5s, height 0.5s;
-    }
-    .btn-primary:active::after { width: 200px; height: 200px; opacity: 0; }
-    .btn-primary:hover { transform: scale(1.03) translateY(-3px); box-shadow: 0 15px 30px #FF4D7A80; }
-    .btn-outline {
-      background: transparent;
-      border: 1.5px solid #FF8AAE;
-      border-radius: 3rem;
-      padding: 0.7rem 1.6rem;
-      font-weight: 600;
-      color: #FFE0EC;
-      transition: 0.2s;
-      cursor: pointer;
-    }
-    .btn-outline:hover { background: #FF8AAE30; transform: translateY(-3px); box-shadow: 0 5px 12px #FF8AAE40; }
-    /* nav */
-    nav {
-      position: fixed;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 92%;
-      max-width: 1320px;
-      background: rgba(8, 11, 25, 0.8);
-      backdrop-filter: blur(20px);
-      border-radius: 70px;
-      padding: 0.5rem 1.8rem;
-      z-index: 1000;
-      border: 1px solid rgba(255, 140, 170, 0.5);
-      transition: all 0.3s;
-    }
-    .logo {
-      font-family: 'Space Grotesk', monospace;
-      font-weight: 800;
-      font-size: 1.5rem;
-      background: linear-gradient(135deg, #FFE6F0, #FFB3CC, #FF88AE);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .logo:hover { text-shadow: 0 0 12px #FF88AA; transform: scale(1.02); }
-    /* product card 3D */
-    .product-card {
-      background: linear-gradient(145deg, rgba(25, 30, 58, 0.85), rgba(15, 18, 40, 0.9));
-      backdrop-filter: blur(8px);
-      border-radius: 2rem;
-      padding: 1.6rem;
-      border: 1px solid rgba(255, 130, 170, 0.4);
-      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      animation: fadeInUp 0.5s ease backwards;
-    }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-    .product-card:hover { transform: translateY(-15px) scale(1.02); border-color: #FF8CAE; box-shadow: 0 35px 50px -12px #FF4D7A80; }
-    .product-card::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,140,180,0.25), transparent 70%);
-      opacity: 0;
-      transition: opacity 0.5s;
-    }
-    .product-card:hover::after { opacity: 1; }
-    /* filter chip */
-    .filter-chip {
-      background: rgba(255, 200, 220, 0.1);
-      border-radius: 40px;
-      padding: 0.5rem 1.3rem;
-      font-weight: 500;
-      transition: all 0.25s;
-      cursor: pointer;
-      border: 1px solid rgba(255, 130, 170, 0.5);
-      backdrop-filter: blur(4px);
-    }
-    .filter-chip.active, .filter-chip:hover {
-      background: linear-gradient(125deg, #FF6A9E, #FF4D7A);
-      border-color: transparent;
-      color: white;
-      box-shadow: 0 6px 14px #FF4D7A60;
-      transform: translateY(-3px) scale(1.02);
-    }
-    .shake { animation: shakeAnim 0.3s ease-in-out; }
-    @keyframes shakeAnim { 0%,100%{ transform: translateX(0); } 25%{ transform: translateX(-6px); } 75%{ transform: translateX(6px); } }
-    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; }
-    .reveal.active { opacity: 1; transform: translateY(0); }
-    .typing-text { border-right: 2px solid #ff88bb; white-space: nowrap; overflow: hidden; animation: blinkCursor 0.75s step-end infinite; }
-    @keyframes blinkCursor { from, to { border-color: transparent; } 50% { border-color: #ff88bb; } }
-    .progress-loader { width: 200px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 4px; margin-top: 15px; overflow: hidden; }
-    .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #ff88bb, #ff4d7a); border-radius: 4px; transition: width 0.2s; }
-    .wallet-badge { background: rgba(255, 120, 160, 0.2); border-radius: 40px; padding: 0.4rem 1.2rem; font-weight: 700; backdrop-filter: blur(4px); border: 1px solid rgba(255, 160, 190, 0.5); cursor: pointer; transition: 0.2s; }
-    .wallet-badge:hover { background: rgba(255, 120, 160, 0.4); transform: scale(1.02); }
-    .history-entry { background: rgba(255, 220, 240, 0.08); border-radius: 1.5rem; padding: 1rem 1.5rem; margin-bottom: 1rem; border-left: 5px solid #FF77AA; backdrop-filter: blur(6px); transition: 0.2s; }
-    .history-entry:hover { transform: translateX(10px); background: rgba(255, 220, 240, 0.15); }
-    .modal-glass { background: rgba(10, 13, 30, 0.98); backdrop-filter: blur(28px); border-radius: 2.2rem; border: 1px solid #FF9ABE; max-width: 500px; width: 90%; padding: 2rem; animation: modalPop 0.3s ease-out; }
-    @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    input, textarea, select { background: rgba(0, 0, 0, 0.55); border: 1px solid #FF98BB; border-radius: 2rem; padding: 0.75rem 1.2rem; color: white; transition: 0.2s; width: 100%; margin: 0.5rem 0; }
-    input:focus, textarea:focus { border-color: #FF6A9E; outline: none; box-shadow: 0 0 15px #FF6A9E; transform: scale(1.01); }
-    @keyframes bounceDog { 0% { transform: translateY(0); } 100% { transform: translateY(-18px); } }
-    @keyframes floatIcon { 0% { transform: translateY(0px); } 100% { transform: translateY(-15px); } }
-    @keyframes pulseHeart { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-    .chatbot-widget { position: fixed; bottom: 100px; right: 20px; width: 350px; z-index: 10001; display: none; animation: slideInRight 0.3s ease; }
-    @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes bounceSoft { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-5px); } }
-    .demo-media img, .demo-media video { max-width:100%; max-height:260px; border-radius:1rem; transition: transform 0.3s; }
-    .demo-media img:hover { transform: scale(1.02); }
-    #particlesContainer { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: -1; }
-  </style>
-</head>
-<body>
-<div class="bg-aura"></div>
-<div id="particlesContainer"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>😂 WINTER CLOUD | HuuDatDev — Loader Hài Hước</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/canvas-confetti.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", "Space Grotesk", sans-serif;
+        background: #0b0c15;
+        color: #f0f3ff;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+      }
+      .bg-glow {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 30% 20%, #1e1b3a, #02020c);
+        z-index: -3;
+      }
+      .bg-glow::before {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        background: radial-gradient(
+          circle at 40% 50%,
+          rgba(255, 100, 150, 0.2),
+          rgba(0, 150, 255, 0.1),
+          transparent
+        );
+        animation: aurora 16s infinite alternate;
+        z-index: -2;
+      }
+      @keyframes aurora {
+        0% {
+          opacity: 0.3;
+          transform: translate(-10%, -10%) scale(1);
+        }
+        100% {
+          opacity: 0.8;
+          transform: translate(10%, 10%) scale(1.2);
+        }
+      }
+      .particle-3d {
+        position: fixed;
+        background: linear-gradient(135deg, #ffb7d2, #ff6a9e);
+        border-radius: 50%;
+        filter: blur(2px);
+        pointer-events: none;
+        z-index: -1;
+        animation: float3d linear infinite;
+        opacity: 0.4;
+      }
+      @keyframes float3d {
+        0% {
+          transform: translateY(100vh) translateX(0) rotate(0deg);
+          opacity: 0;
+        }
+        20% {
+          opacity: 0.7;
+        }
+        80% {
+          opacity: 0.5;
+        }
+        100% {
+          transform: translateY(-20vh) translateX(40px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      .glass-premium {
+        background: rgba(20, 22, 45, 0.55);
+        backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 130, 180, 0.5);
+        border-radius: 2rem;
+        box-shadow:
+          0 25px 45px -12px rgba(0, 0, 0, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+      .card-luxury {
+        background: linear-gradient(
+          145deg,
+          rgba(25, 28, 55, 0.8),
+          rgba(16, 18, 38, 0.9)
+        );
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 140, 180, 0.4);
+        border-radius: 2rem;
+        transition: all 0.4s cubic-bezier(0.2, 0.8, 0.4, 1.2);
+      }
+      .card-luxury:hover {
+        transform: translateY(-12px) rotateX(4deg) scale(1.02);
+        border-color: #ff8aae;
+        box-shadow: 0 40px 60px -20px rgba(255, 80, 130, 0.5);
+      }
+      .btn-gold {
+        background: linear-gradient(115deg, #ff3d6c, #ff926b);
+        border: none;
+        border-radius: 3rem;
+        padding: 0.8rem 2rem;
+        font-weight: 700;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px -5px #ff3d6c80;
+      }
+      .btn-glow {
+        background: transparent;
+        border: 1.5px solid rgba(255, 140, 180, 0.8);
+        border-radius: 3rem;
+        padding: 0.75rem 1.8rem;
+        font-weight: 600;
+        color: #ffe0ec;
+        transition: 0.25s;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+      }
+      .btn-glow:hover {
+        background: rgba(255, 140, 180, 0.25);
+        transform: translateY(-3px);
+      }
+      .navbar {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 1300px;
+        background: rgba(10, 12, 28, 0.7);
+        backdrop-filter: blur(24px);
+        border-radius: 80px;
+        padding: 0.6rem 2rem;
+        z-index: 1000;
+        border: 1px solid rgba(255, 140, 170, 0.4);
+        transition: all 0.4s;
+      }
+      .navbar.scrolled {
+        background: rgba(6, 8, 22, 0.9);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        top: 12px;
+      }
+      .logo {
+        font-family: "Space Grotesk", monospace;
+        font-weight: 800;
+        font-size: 1.6rem;
+        background: linear-gradient(135deg, #fff5f9, #ffb8d0, #ff6a9e);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        cursor: pointer;
+      }
 
-<!-- Loader -->
-<div id="dogLoader" class="dog-loader-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background:#03050cd9; backdrop-filter:blur(20px); z-index:10000; display:flex; justify-content:center; align-items:center; flex-direction:column; visibility:hidden; opacity:0; transition:0.2s;">
-  <div style="text-align: center;">
-    <i class="fas fa-dog" style="font-size:80px; filter:drop-shadow(0 0 12px #ff90b5); animation:bounceDog 0.5s infinite alternate;"></i>
-    <h2 id="loaderText" style="margin-top:20px;">🐕 Đang xử lý... ☁️</h2>
-    <div class="progress-loader"><div class="progress-bar" id="loaderProgress"></div></div>
-  </div>
-</div>
+      .funny-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(25px);
+        z-index: 20000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        visibility: hidden;
+        opacity: 0;
+        transition:
+          visibility 0.2s,
+          opacity 0.3s ease;
+      }
+      .funny-loader.active {
+        visibility: visible;
+        opacity: 1;
+      }
+      .loader-card {
+        text-align: center;
+        background: rgba(30, 25, 55, 0.85);
+        backdrop-filter: blur(30px);
+        border-radius: 3rem;
+        padding: 2rem 2.5rem;
+        border: 2px solid #ffb347;
+        box-shadow:
+          0 0 50px #ffb347,
+          inset 0 0 20px rgba(255, 180, 70, 0.3);
+        animation: shakeFun 0.3s infinite alternate;
+        transform-origin: center;
+      }
+      @keyframes shakeFun {
+        0% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        100% {
+          transform: translateY(-8px) rotate(2deg);
+        }
+      }
+      .funny-icon {
+        font-size: 5.5rem;
+        filter: drop-shadow(0 0 15px #ffb347);
+        margin-bottom: 1rem;
+        animation: spinFun 0.5s infinite alternate;
+      }
+      @keyframes spinFun {
+        0% {
+          transform: scale(1) rotate(-5deg);
+        }
+        100% {
+          transform: scale(1.1) rotate(5deg);
+        }
+      }
+      .funny-text {
+        font-size: 1.6rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #ffe6b0, #ffb347);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin: 1rem 0;
+        font-family: "Space Grotesk", monospace;
+      }
+      .progress-bar-funny {
+        width: 300px;
+        height: 12px;
+        background: #ffffff30;
+        border-radius: 20px;
+        overflow: hidden;
+        margin: 1rem auto;
+        box-shadow: inset 0 1px 3px #00000050;
+      }
+      .progress-fill-funny {
+        width: 0%;
+        height: 100%;
+        background: repeating-linear-gradient(45deg, #ffb347, #ff8c00, #ffb347);
+        border-radius: 20px;
+        transition: width 0.05s linear;
+        box-shadow: 0 0 10px #ffb347;
+      }
+      .sub-text {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 0.8rem;
+        font-style: italic;
+      }
 
-<!-- Music & effects -->
-<div style="position: fixed; bottom: 20px; left: 20px; background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); border-radius: 60px; padding: 6px 18px; z-index: 10000; display: flex; gap: 12px; border: 1px solid #ff8aae;">
-  <i class="fas fa-music" style="color: #ffb7c7"></i><span>🎵 Winter Breeze</span>
-  <i id="playPauseBtn" class="fas fa-play" style="cursor: pointer"></i>
-</div>
-<audio id="bgMusic" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
+      .chip {
+        background: rgba(255, 200, 220, 0.1);
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        cursor: pointer;
+        border: 1px solid rgba(255, 130, 170, 0.5);
+        backdrop-filter: blur(4px);
+      }
+      .chip.active,
+      .chip:hover {
+        background: linear-gradient(125deg, #ff6a9e, #ff4d7a);
+        border-color: transparent;
+        color: white;
+        box-shadow: 0 8px 18px #ff4d7a60;
+        transform: translateY(-3px);
+      }
+      .product-item {
+        animation: slideUpFade 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.2) backwards;
+      }
+      @keyframes slideUpFade {
+        from {
+          opacity: 0;
+          transform: translateY(60px) scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      .reveal-section {
+        opacity: 0;
+        transform: translateY(50px);
+        transition:
+          opacity 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.2),
+          transform 0.7s ease;
+      }
+      .reveal-section.revealed {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .modal-luxury {
+        background: rgba(8, 10, 28, 0.98);
+        backdrop-filter: blur(40px);
+        border-radius: 2.5rem;
+        border: 1px solid #ffa0c0;
+        max-width: 500px;
+        width: 90%;
+        padding: 2rem;
+        animation: modalZoom 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+      }
+      @keyframes modalZoom {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .snow,
+      .heart {
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        animation: fallDown linear forwards;
+      }
+      @keyframes fallDown {
+        0% {
+          transform: translateY(-20vh) rotate(0deg);
+          opacity: 0.9;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      .input-luxury {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid #ff98bb;
+        border-radius: 2rem;
+        padding: 0.8rem 1.2rem;
+        color: white;
+        transition: all 0.2s;
+        width: 100%;
+      }
+      .input-luxury:focus {
+        border-color: #ff6a9e;
+        outline: none;
+        box-shadow: 0 0 18px #ff6a9e;
+      }
+      .history-card {
+        background: rgba(255, 220, 240, 0.06);
+        border-radius: 1.5rem;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #ff77aa;
+        transition: all 0.3s;
+        animation: slideLeft 0.5s backwards;
+      }
+      @keyframes slideLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-40px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .typing-glow {
+        border-right: 2px solid #ff88bb;
+        white-space: nowrap;
+        overflow: hidden;
+        animation:
+          blinkCursor 0.8s step-end infinite,
+          textGlow 2s infinite alternate;
+      }
+      @keyframes textGlow {
+        0% {
+          text-shadow: 0 0 2px #ff88bb;
+        }
+        100% {
+          text-shadow: 0 0 12px #ff4d7a;
+        }
+      }
+      @keyframes blinkCursor {
+        from,
+        to {
+          border-color: transparent;
+        }
+        50% {
+          border-color: #ff88bb;
+        }
+      }
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none !important;
+        }
+        .typing-glow {
+          white-space: normal;
+          border-right: none;
+        }
+      }
+      .demo-media {
+        margin-top: 1rem;
+        text-align: center;
+        max-height: 400px;
+        overflow: auto;
+      }
+      .demo-media img,
+      .demo-media video {
+        max-width: 100%;
+        max-height: 350px;
+        border-radius: 1rem;
+        border: 1px solid #ff88bb;
+        box-shadow: 0 0 15px rgba(255, 136, 187, 0.4);
+      }
+      .demo-iframe {
+        width: 100%;
+        height: 315px;
+        border-radius: 1rem;
+        border: none;
+      }
+      @keyframes floatIcon {
+        0% {
+          transform: translateY(0px);
+        }
+        100% {
+          transform: translateY(-15px);
+        }
+      }
+      @keyframes pulseHeart {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .modal {
+        align-items: center;
+        justify-content: center;
+      }
+      .wallet-badge {
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .wallet-badge:hover {
+        background: rgba(255, 120, 160, 0.4);
+        transform: scale(1.02);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-glow"></div>
+    <div
+      id="particleContainer"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+      "
+    ></div>
 
-<nav>
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <div class="logo" onclick="navigateTo('home')">❄️ WINTER CLOUD SHOP</div>
-    <ul class="nav-links" style="display: flex; gap: 1rem; list-style: none;">
-      <li><a onclick="navigateTo('home')" style="cursor: pointer;">🏠 Trang chủ</a></li>
-      <li><a onclick="navigateTo('products')" style="cursor: pointer;">📦 Sản phẩm</a></li>
-      <li><a onclick="navigateTo('qrlove')" style="cursor: pointer;">💖 QR Yêu</a></li>
-      <li><a onclick="navigateTo('bank')" style="cursor: pointer;">💰 Nạp tiền</a></li>
-      <li><a onclick="navigateTo('history')" style="cursor: pointer;">📜 Lịch sử</a></li>
-      <li><a onclick="navigateTo('admin')" style="cursor: pointer;">👑 Admin</a></li>
-    </ul>
-    <div style="display: flex; gap: 0.8rem;">
-      <div class="wallet-badge" id="walletDisplay" style="display: none;" onclick="navigateTo('history')"><i class="fas fa-coins"></i> <span id="walletAmount">0</span>đ</div>
-      <button class="btn-primary" id="authBtn" onclick="openAuthModal()" style="padding: 0.5rem 1.2rem;"><i class="fas fa-paw"></i> Đăng nhập</button>
-      <button class="btn-primary" id="logoutBtn" style="display: none; background: #4A3F5E;" onclick="logout()">Thoát</button>
+    <div id="funnyLoader" class="funny-loader">
+      <div class="loader-card">
+        <div class="funny-icon" id="loaderFunIcon">😂</div>
+        <div class="funny-text" id="loaderFunText">
+          Đang tải ... chờ xíu cưng ơi!
+        </div>
+        <div class="progress-bar-funny">
+          <div class="progress-fill-funny" id="loaderProgressFill"></div>
+        </div>
+        <div class="sub-text" id="loaderSubText">⚡ tốc độ ánh sáng =))</div>
+      </div>
     </div>
-  </div>
-</nav>
 
-<main style="padding-top: 110px;">
-  <div class="glass reveal" style="max-width: 1320px; margin: 0 auto 2rem; padding: 2rem;">
-    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1.5rem;">
-      <div><h1 style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg,#FFF0F5,#FFB8D0); -webkit-background-clip: text; background-clip: text; color: transparent;">HuuDatDev Premium</h1>
-      <p class="typing-text" id="slogan" style="font-size: 1.2rem; max-width: 500px;"></p>
-      <div style="display: flex; gap: 1rem; margin-top: 1.2rem;"><button class="btn-primary" onclick="navigateTo('products')">Khám phá ngay</button><button class="btn-outline" onclick="navigateTo('bank')">Nạp tiền</button></div></div>
-      <i class="fas fa-cloud-moon" style="font-size: 4.5rem; opacity: 0.7; filter: drop-shadow(0 0 15px #ff99bb); animation: floatIcon 3s infinite alternate;"></i>
+    <div
+      style="
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(12px);
+        border-radius: 60px;
+        padding: 6px 18px;
+        z-index: 10000;
+        display: flex;
+        gap: 12px;
+        border: 1px solid #ff8aae;
+      "
+    >
+      <i class="fas fa-music" style="color: #ffb7c7"></i
+      ><span>🎵 Nhạc nền hài hước</span>
+      <i id="playPauseIcon" class="fas fa-play" style="cursor: pointer"></i>
     </div>
-  </div>
+    <audio id="bgAudio" loop>
+      <source
+        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+        type="audio/mpeg"
+      />
+    </audio>
 
-  <div style="max-width: 1320px; margin: 0 auto 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(270px,1fr)); gap: 1.5rem;">
-    <div class="glass-card reveal" style="padding: 1.5rem;"><i class="fas fa-code-branch fa-2x" style="color:#ff8aae"></i><h3 style="margin: 0.7rem 0">Code xịn, cập nhật liên tục</h3><p>Python, Web, Bot, MMO tools giá rẻ nhất</p></div>
-    <div class="glass-card reveal" style="padding: 1.5rem; transition-delay: 0.1s;"><i class="fas fa-headset fa-2x" style="color:#ff8aae"></i><h3 style="margin: 0.7rem 0">Support 24/7</h3><p>Facebook, Zalo luôn sẵn sàng</p><button class="btn-outline" style="margin-top: 0.5rem; padding: 0.3rem 1rem;" onclick="window.open('https://www.facebook.com/dinhhuudat8/')"><i class="fab fa-facebook"></i> Liên hệ</button></div>
-    <div class="glass-card reveal" style="padding: 1.5rem; transition-delay: 0.2s;"><i class="fas fa-gift fa-2x" style="color:#ff8aae"></i><h3>🎁 Kèo free + ưu đãi</h3><p>Member nhận code miễn phí mỗi tuần</p><button class="btn-outline" style="margin-top: 0.5rem;" onclick="Swal.fire('Kèo Free', 'Cập nhật liên tục trong group Zalo', 'info')">Xem ngay</button></div>
-  </div>
+    <nav class="navbar" id="mainNav">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <!-- Logo sẽ kích hoạt admin khi click 3 lần liên tiếp -->
+        <div class="logo" id="secretAdminLogo">❄️ WINTER CLOUD</div>
+        <ul
+          class="nav-links"
+          style="display: flex; gap: 1.8rem; list-style: none"
+        >
+          <li>
+            <a onclick="navigateWithFunnyLoader('home')" style="cursor: pointer"
+              >🏠 Trang chủ</a
+            >
+          </li>
+          <li>
+            <a
+              onclick="navigateWithFunnyLoader('products')"
+              style="cursor: pointer"
+              >📦 Sản phẩm</a
+            >
+          </li>
+          <li>
+            <a
+              onclick="navigateWithFunnyLoader('qrlove')"
+              style="cursor: pointer"
+              >💖 QR Yêu</a
+            >
+          </li>
+          <li>
+            <a onclick="navigateWithFunnyLoader('bank')" style="cursor: pointer"
+              >💰 Nạp tiền</a
+            >
+          </li>
+          <li>
+            <a
+              onclick="navigateWithFunnyLoader('history')"
+              style="cursor: pointer"
+              >📜 Lịch sử</a
+            >
+          </li>
+          <!-- Không có nút admin nào trên thanh navbar -->
+        </ul>
+        <div style="display: flex; gap: 0.8rem">
+          <div
+            class="wallet-badge"
+            id="walletBox"
+            style="
+              display: none;
+              background: rgba(255, 120, 160, 0.2);
+              border-radius: 40px;
+              padding: 0.4rem 1.2rem;
+              cursor: pointer;
+            "
+            onclick="navigateWithFunnyLoader('history')"
+          >
+            <i class="fas fa-coins"></i> <span id="walletValue">0</span>đ
+          </div>
+          <button class="btn-glow" id="authBtnNav" onclick="openAuthModal()">
+            <i class="fas fa-paw"></i> Đăng nhập
+          </button>
+          <button
+            class="btn-glow"
+            id="logoutBtnNav"
+            style="display: none"
+            onclick="logout()"
+          >
+            Thoát
+          </button>
+        </div>
+      </div>
+    </nav>
 
-  <div style="max-width: 1320px; margin: 0 auto 1rem;">
-    <div class="glass" style="display: flex; gap: 0.8rem; padding: 0.5rem 1rem; align-items: center;">
-      <input type="text" id="searchInput" placeholder="🔍 Tìm kiếm sản phẩm, source, tool..." style="flex:1; background: rgba(0,0,0,0.5);">
-      <button class="btn-primary" onclick="searchProducts()"><i class="fas fa-search"></i> Tìm</button>
+    <main style="padding-top: 110px">
+      <div
+        class="glass-premium reveal-section"
+        style="max-width: 1320px; margin: 0 auto 2rem; padding: 2rem"
+      >
+        <div
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+          "
+        >
+          <div>
+            <h1
+              style="
+                font-size: 2.8rem;
+                font-weight: 800;
+                background: linear-gradient(135deg, #fff0f5, #ffb8d0, #ff6a9e);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+              "
+            >
+              HuuDatDev Premium
+            </h1>
+            <p
+              class="typing-glow"
+              id="sloganText"
+              style="font-size: 1.2rem; max-width: 550px"
+            ></p>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem">
+              <button
+                class="btn-gold"
+                onclick="navigateWithFunnyLoader('products')"
+              >
+                Khám phá ngay</button
+              ><button
+                class="btn-glow"
+                onclick="navigateWithFunnyLoader('bank')"
+              >
+                Nạp tiền
+              </button>
+            </div>
+          </div>
+          <i
+            class="fas fa-face-grin-tongue-squint"
+            style="
+              font-size: 4rem;
+              opacity: 0.8;
+              filter: drop-shadow(0 0 15px #ff99bb);
+              animation: floatIcon 3s infinite alternate;
+            "
+          ></i>
+        </div>
+      </div>
+
+      <div
+        style="
+          max-width: 1320px;
+          margin: 0 auto 3rem;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 1.8rem;
+        "
+      >
+        <div class="card-luxury reveal-section" style="padding: 1.8rem">
+          <i class="fas fa-code-branch fa-2x" style="color: #ff8aae"></i>
+          <h3 style="margin: 0.7rem 0">Code đỉnh cao</h3>
+          <p>Python, Web, Bot, Tool MMO chất lượng</p>
+        </div>
+        <div class="card-luxury reveal-section" style="padding: 1.8rem">
+          <i class="fas fa-headset fa-2x" style="color: #ff8aae"></i>
+          <h3>Support 24/7</h3>
+          <p>Facebook & Zalo phản hồi nhanh</p>
+          <button
+            class="btn-glow"
+            style="margin-top: 0.5rem; padding: 0.3rem 1rem"
+            onclick="window.open('https://www.facebook.com/dinhhuudat8/')"
+          >
+            <i class="fab fa-facebook"></i> Liên hệ
+          </button>
+        </div>
+        <div class="card-luxury reveal-section" style="padding: 1.8rem">
+          <i class="fas fa-gift fa-2x" style="color: #ff8aae"></i>
+          <h3>🎁 Quà tặng Member</h3>
+          <p>Code miễn phí mỗi tuần</p>
+          <button
+            class="btn-glow"
+            onclick="Swal.fire('Kèo Free', 'Cập nhật trong group Zalo', 'info')"
+          >
+            Xem ngay
+          </button>
+        </div>
+      </div>
+
+      <div style="max-width: 1320px; margin: 0 auto 1.5rem">
+        <div
+          class="glass-premium"
+          style="
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem 1rem;
+            align-items: center;
+          "
+        >
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="🔍 Tìm sản phẩm, tool, source..."
+            class="input-luxury"
+            style="flex: 1"
+          />
+          <button class="btn-gold" onclick="searchProducts()">
+            <i class="fas fa-search"></i> Tìm
+          </button>
+        </div>
+        <div
+          id="filterChips"
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 1.2rem;
+          "
+        ></div>
+      </div>
+
+      <section id="products" style="padding: 1rem 1rem 3rem">
+        <div style="max-width: 1400px; margin: 0 auto">
+          <h2
+            style="
+              text-align: center;
+              font-size: 2rem;
+              font-weight: 700;
+              background: linear-gradient(145deg, #ffe0ee, #ffb0c8);
+              -webkit-background-clip: text;
+              background-clip: text;
+              color: transparent;
+            "
+          >
+            ✨ Bộ sưu tập độc quyền ✨
+          </h2>
+          <div
+            id="productsGrid"
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+              gap: 2rem;
+              margin-top: 2rem;
+            "
+          ></div>
+        </div>
+      </section>
+
+      <section id="qrlove" class="reveal-section" style="padding: 2rem 1rem">
+        <div
+          class="card-luxury"
+          style="
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+          "
+        >
+          <h3>
+            <i
+              class="fas fa-heart"
+              style="color: #ff77aa; animation: pulseHeart 1s infinite"
+            ></i>
+            QRCODE TRÁI TIM
+          </h3>
+          <input
+            id="qrContent"
+            placeholder="Nhập link hoặc lời nhắn..."
+            class="input-luxury"
+            style="margin: 1rem 0"
+          /><button class="btn-gold" onclick="genHeartQR()">Tạo QR Cute</button>
+          <div id="qrResult" style="display: none; margin-top: 1rem">
+            <div id="qrCanvas"></div>
+            <button class="btn-glow" onclick="downloadQR()">Tải QR</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="bank" class="reveal-section" style="padding: 2rem 1rem">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1100px;
+            margin: auto;
+          "
+        >
+          <div class="card-luxury" style="padding: 2rem">
+            <h3>🏦 THÔNG TIN NẠP</h3>
+            <p>
+              Ngân hàng: BIDV<br />Chủ TK: ĐINH HỮU ĐẠT<br />Số TK:
+              8826353645<br />Nội dung: NAP + MÃ GD
+            </p>
+          </div>
+          <div class="card-luxury" style="padding: 2rem">
+            <img
+              src="https://img.vietqr.io/image/BIDV-8826353645-compact.png"
+              width="140"
+            /><input
+              id="depositAmountInput"
+              placeholder="Số tiền (VNĐ)"
+              class="input-luxury"
+              type="number"
+            /><input
+              id="depositPhoneInput"
+              placeholder="Số điện thoại"
+              class="input-luxury"
+            /><button class="btn-gold" onclick="sendDepositReq()">
+              Gửi yêu cầu nạp
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="history" class="reveal-section" style="padding: 2rem 1rem">
+        <div
+          class="glass-premium"
+          style="max-width: 1000px; margin: auto; padding: 2rem"
+        >
+          <h3>📜 LỊCH SỬ MUA HÀNG</h3>
+          <div id="historyList"></div>
+        </div>
+      </section>
+
+      <section
+        id="adminPanel"
+        style="display: none; padding: 2rem"
+        class="reveal-section"
+      >
+        <div
+          class="glass-premium"
+          style="padding: 2rem; max-width: 1200px; margin: auto"
+        >
+          <h3>👑 ADMIN PANEL</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+            <input
+              id="prodName"
+              placeholder="Tên sản phẩm"
+              class="input-luxury"
+            /><input
+              id="prodPrice"
+              placeholder="Giá (VNĐ)"
+              type="number"
+              class="input-luxury"
+            /><select id="prodCategory" class="input-luxury">
+              <option>python</option>
+              <option>website</option>
+              <option>love</option>
+              <option>qrlove</option></select
+            ><input
+              id="prodIcon"
+              placeholder="Icon (fas fa-code)"
+              value="fas fa-code"
+              class="input-luxury"
+            /><textarea
+              id="prodDesc"
+              placeholder="Mô tả"
+              class="input-luxury"
+            ></textarea
+            ><input
+              id="prodDownloadLink"
+              placeholder="Link tải"
+              class="input-luxury"
+            />
+            <div>
+              <label>🔗 Link demo (video/ảnh):</label
+              ><input
+                id="prodDemoLink"
+                placeholder="https://youtube.com/... hoặc link ảnh/video trực tiếp"
+                class="input-luxury"
+              />
+            </div>
+            <div>
+              <label>📂 Hoặc tải file lên:</label
+              ><input type="file" id="prodDemoFile" accept="image/*,video/*" />
+            </div>
+          </div>
+          <button class="btn-gold" onclick="addNewProduct()">
+            ➕ Thêm sản phẩm</button
+          ><button class="btn-glow" onclick="refreshAdminList()">
+            📋 Kiểm tra
+          </button>
+          <div
+            id="adminProductList"
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+              gap: 1rem;
+              margin-top: 2rem;
+            "
+          ></div>
+        </div>
+      </section>
+    </main>
+    <footer style="text-align: center; padding: 2rem; margin-top: 2rem">
+      <p>🐕 HuuDatDev — Mã nguồn chất lượng, hiệu ứng hài hước bá đạo</p>
+      <div>
+        <i class="fas fa-heart" style="color: #ff88bb"></i> Winter Cloud Shop
+        2026
+      </div>
+    </footer>
+
+    <div
+      id="authModalWin"
+      class="modal"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(24px);
+        align-items: center;
+        justify-content: center;
+        z-index: 20000;
+      "
+    >
+      <div class="modal-luxury">
+        <div style="display: flex; justify-content: space-between">
+          <h3>🐩 WINTER ACCESS</h3>
+          <button
+            onclick="closeAuthModal()"
+            style="
+              background: none;
+              border: none;
+              font-size: 2rem;
+              color: white;
+            "
+          >
+            &times;
+          </button>
+        </div>
+        <div style="display: flex; gap: 1rem; margin: 1rem 0">
+          <button class="btn-gold" onclick="switchAuth('login')">
+            ĐĂNG NHẬP</button
+          ><button class="btn-glow" onclick="switchAuth('register')">
+            ĐĂNG KÝ
+          </button>
+        </div>
+        <div id="loginFormDiv">
+          <input
+            id="loginUser"
+            placeholder="Tên đăng nhập"
+            class="input-luxury"
+          /><input
+            id="loginPass"
+            type="password"
+            placeholder="Mật khẩu"
+            class="input-luxury"
+          /><button class="btn-gold" onclick="loginUser()">Đăng nhập</button>
+        </div>
+        <div id="registerFormDiv" style="display: none">
+          <input
+            id="regUser"
+            placeholder="Tên đăng nhập"
+            class="input-luxury"
+          /><input
+            id="regEmailAddr"
+            placeholder="Email"
+            class="input-luxury"
+          /><input
+            id="regPass"
+            type="password"
+            placeholder="Mật khẩu"
+            class="input-luxury"
+          /><input
+            id="regConfirmPass"
+            type="password"
+            placeholder="Xác nhận"
+            class="input-luxury"
+          /><button class="btn-gold" onclick="registerUser()">
+            Đăng ký (+2000đ)
+          </button>
+        </div>
+      </div>
     </div>
-    <div id="categoryFilters" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 1.2rem;"></div>
-  </div>
 
-  <section id="products" style="padding: 1rem 1rem 2rem;">
-    <div style="max-width: 1400px; margin: 0 auto;"><h2 class="section-title" style="text-align: center; font-size: 2rem; font-weight: 700; background: linear-gradient(145deg,#FFE0EE,#FFB0C8); -webkit-background-clip: text; background-clip: text; color: transparent;">✨ Sản phẩm nổi bật ✨</h2>
-    <div class="products-grid" id="productsGrid"></div></div>
-  </section>
-
-  <section id="qrlove" style="padding: 2rem 1rem;">
-    <div class="glass-card reveal" style="max-width: 600px; margin: 0 auto; padding: 2rem; text-align: center;">
-      <h3 style="font-size: 1.8rem;"><i class="fas fa-heart" style="color:#ff77aa; animation: pulseHeart 1s infinite;"></i> QRCODE HÌNH TRÁI TIM</h3>
-      <input id="qrHeartContent" placeholder="Nhập link hoặc lời nhắn yêu thương..." style="margin: 1rem 0;">
-      <button class="btn-primary" onclick="generateHeartQR()"><i class="fas fa-qrcode"></i> Tạo QR Cute</button>
-      <div id="qrHeartResult" style="display: none; margin-top: 1rem;"><div id="qrCodeContainer"></div><button class="btn-primary" style="margin-top: 1rem;" onclick="downloadHeartQR()">Tải QR</button></div>
+    <!-- Modal nhập mật khẩu Admin (chỉ hiện khi click 3 lần vào logo) -->
+    <div
+      id="adminPasswordModal"
+      class="modal"
+      style="
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 30000;
+      "
+    >
+      <div class="modal-luxury" style="max-width: 400px">
+        <div style="display: flex; justify-content: space-between">
+          <h3>🔐 Xác thực Admin</h3>
+          <button
+            onclick="closeAdminPasswordModal()"
+            style="
+              background: none;
+              border: none;
+              font-size: 2rem;
+              color: white;
+            "
+          >
+            &times;
+          </button>
+        </div>
+        <input
+          type="password"
+          id="adminPasswordInput"
+          placeholder="Nhập mật khẩu admin"
+          class="input-luxury"
+          style="margin: 1rem 0"
+        />
+        <button
+          class="btn-gold"
+          onclick="verifyAdminPassword()"
+          style="width: 100%"
+        >
+          Xác nhận
+        </button>
+        <!-- Không hiển thị mật khẩu mặc định -->
+      </div>
     </div>
-  </section>
 
-  <section id="bank" style="padding: 2rem 1rem;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 1100px; margin: auto;">
-      <div class="glass-card reveal" style="padding: 2rem;"><h3>🏦 THÔNG TIN NẠP</h3><p>Ngân hàng: BIDV<br>Chủ TK: ĐINH HỮU ĐẠT<br>Số TK: 8826353645<br>Nội dung: NAP + mã giao dịch<br>📌 Shop nhận làm dịch vụ MXH</p></div>
-      <div class="glass-card reveal" style="padding: 2rem;"><img src="https://img.vietqr.io/image/BIDV-8826353645-compact.png" width="140" style="margin-bottom: 1rem;"><input id="depositAmount" placeholder="Số tiền (VNĐ)" type="number"><input id="depositPhone" placeholder="Số điện thoại"><button class="btn-primary" onclick="requestDeposit()">Gửi yêu cầu nạp</button></div>
+    <div
+      id="buyModalWin"
+      class="modal"
+      style="display: none; align-items: center; justify-content: center"
+    >
+      <div class="modal-luxury">
+        <h3 id="buyProdName"></h3>
+        <p id="buyProdPrice" style="font-size: 2rem"></p>
+        <p>Số dư: <strong id="userBalanceShow">0</strong>đ</p>
+        <button class="btn-gold" onclick="confirmPurchase()">
+          Xác nhận mua</button
+        ><button class="btn-glow" onclick="closeBuyModal()">Hủy</button>
+      </div>
     </div>
-  </section>
 
-  <section id="history" style="padding: 2rem 1rem;">
-    <div class="glass reveal" style="max-width: 1000px; margin: auto; padding: 2rem;"><h3 class="section-title">📜 LỊCH SỬ MUA HÀNG & TẢI</h3><div id="historyList"></div></div>
-  </section>
-
-  <section id="adminPanel" style="display: none; padding: 2rem;">
-    <div class="glass" style="padding: 2rem; max-width: 1200px; margin: auto;"><h3>👑 ADMIN PANEL</h3>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;"><input id="prodName" placeholder="Tên sản phẩm"><input id="prodPrice" placeholder="Giá (VNĐ)" type="number"><select id="prodCategory"><option>python</option><option>website</option><option>love</option><option>qrlove</option><option>card</option></select><input id="prodIcon" placeholder="Icon" value="fas fa-code"><textarea id="prodDesc" placeholder="Mô tả"></textarea><input id="prodDownloadLink" placeholder="Link tải"><div><label>📂 Demo:</label><input type="file" id="prodDemoFile" accept="image/*,video/*"></div></div>
-      <button class="btn-primary" onclick="addProduct()">➕ Thêm</button><button class="btn-outline" onclick="refreshAdminProducts()">📋 Kiểm tra</button>
-      <div id="adminProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap:1rem; margin-top:2rem;"></div>
-      <div><h3>⏳ Giao dịch chờ duyệt</h3><div id="pendingTransactions"></div></div>
+    <div
+      id="demoModal"
+      class="modal"
+      style="
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 30001;
+      "
+    >
+      <div class="modal-luxury" style="max-width: 800px; width: 95%">
+        <div style="display: flex; justify-content: space-between">
+          <h3>🎬 Xem demo sản phẩm</h3>
+          <button
+            onclick="closeDemoModal()"
+            style="
+              background: none;
+              border: none;
+              font-size: 2rem;
+              color: white;
+            "
+          >
+            &times;
+          </button>
+        </div>
+        <div
+          id="demoModalContent"
+          class="demo-media"
+          style="margin-top: 1rem"
+        ></div>
+        <button
+          class="btn-glow"
+          onclick="closeDemoModal()"
+          style="margin-top: 1rem"
+        >
+          Đóng
+        </button>
+      </div>
     </div>
-  </section>
-</main>
-<footer style="text-align: center; padding: 2rem; margin-top: 2rem;"><p>🐕 HuuDatDev — Shop mã nguồn rẻ nhất | Liên hệ hỗ trợ trực tiếp</p><div style="margin-top: 0.8rem;"><i class="fas fa-heart" style="color:#ff88bb"></i> Made with love for winter <i class="fas fa-snowflake"></i></div></footer>
 
-<!-- Modals -->
-<div id="authModal" class="modal" style="display: none; position: fixed; inset:0; background: rgba(0,0,0,0.7); backdrop-filter: blur(20px); align-items: center; justify-content: center; z-index: 20000;"><div class="modal-glass"><div style="display: flex; justify-content: space-between;"><h3>🐩 WINTER ACCESS</h3><button onclick="closeAuthModal()" style="background: none; border: none; font-size: 2rem; color:white;">&times;</button></div><div style="display: flex; gap:1rem; margin:1rem 0;"><button class="btn-primary" onclick="switchAuth('login')">ĐĂNG NHẬP</button><button class="btn-outline" onclick="switchAuth('register')">ĐĂNG KÝ</button></div><div id="loginForm"><div id="loginError" class="error-msg" style="display:none;"></div><input id="loginUsername" placeholder="Tên đăng nhập"><input id="loginPassword" type="password" placeholder="Mật khẩu"><button class="btn-primary" onclick="login()">Đăng nhập</button></div><div id="registerForm" style="display:none"><div id="registerError" class="error-msg" style="display:none;"></div><input id="regUsername" placeholder="Tên đăng nhập"><input id="regEmail" placeholder="Email"><input id="regPassword" type="password" placeholder="Mật khẩu"><input id="regConfirm" type="password" placeholder="Xác nhận mật khẩu"><button class="btn-primary" onclick="register()">Đăng ký (+2000đ)</button></div></div></div>
-<div id="buyModal" class="modal" style="display: none; align-items: center; justify-content: center;"><div class="modal-glass"><h3 id="buyProductName"></h3><p id="buyProductPrice" style="font-size:2rem"></p><p>Số dư: <strong id="currentBalance">0</strong>đ</p><button class="btn-primary" onclick="confirmBuy()">Xác nhận mua</button><button class="btn-outline" onclick="closeBuyModal()">Hủy</button></div></div>
-<div id="demoModal" class="modal" style="display: none; align-items: center; justify-content: center;"><div class="modal-glass"><div style="display: flex; justify-content: space-between;"><h3>✨ Xem trước sản phẩm</h3><button onclick="closeDemoModal()" style="background:none; border:none; font-size:1.8rem;">&times;</button></div><div id="demoContent"></div><div id="demoMediaContainer" class="demo-media"></div><button class="btn-primary" onclick="closeDemoModal()">Đóng</button></div></div>
+    <!-- ========== THÊM HAI SCRIPT THEO YÊU CẦU (KHÔNG THAY ĐỔI NỘI DUNG KHÁC) ========== -->
+    <script src="./assets/js/winter-app.js"></script>
+    <script src="./assets/js/winter-data.js"></script>
 
-<!-- Chatbot -->
-<div style="position: fixed; bottom: 100px; right: 20px; width: 55px; height: 55px; background: linear-gradient(145deg,#ff6a9e,#ff4d7a); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10001; box-shadow: 0 0 15px #ff6a9e; animation: bounceSoft 2s infinite;" id="chatbotToggle"><i class="fas fa-comment-dots fa-2x"></i></div>
-<div class="chatbot-widget" id="chatbotWidget"><div class="chatbot-window" style="background: rgba(8,12,28,0.96); backdrop-filter: blur(20px); border-radius: 2rem; border:1px solid #ff88b5;"><div style="padding:12px; background:#ff88bb20; display:flex; justify-content: space-between;"><span><i class="fas fa-dog"></i> WinterBot AI</span><button id="closeChatbotBtn" style="background:none; border:none; color:white">✖</button></div><div id="chatbotMessages" style="height:300px; overflow-y:auto; padding:12px"></div><div style="display:flex"><input id="chatbotInput" placeholder="Hỏi gì về shop..." style="flex:1; border-radius:0 0 0 1.5rem"><button id="sendChatbotBtn" class="btn-primary" style="border-radius:0 0 1.5rem 0;">Gửi</button></div></div></div>
+    <script>
+      // -------------------- DỮ LIỆU --------------------
+      let currentUser = null,
+        products = [],
+        purchaseHistory = [];
+      let isAdminMode = false;
+      const ADMIN_PASSWORD = "admin123"; // Thay đổi thành mật khẩu phức tạp hơn nếu muốn
 
-<script>
-  // -------------------- CORE LOGIC + VÔ SỐ HIỆU ỨNG --------------------
-  let currentUser = null, products = [], purchaseHistory = [];
-  function loadData() {
-    const storedProducts = localStorage.getItem('winter_products');
-    products = storedProducts ? JSON.parse(storedProducts) : [
-      { id: 'p1', name: 'Tool Auto Like Facebook', price: 99000, category: 'python', icon: 'fab fa-python', desc: 'Auto like, thả tim FB', downloadLink: 'https://drive.google.com/', demo: '' },
-      { id: 'p2', name: 'Source Web MMO Game', price: 199000, category: 'website', icon: 'fas fa-globe', desc: 'Full code website kiếm tiền', downloadLink: 'https://example.com/', demo: '' },
-      { id: 'p3', name: 'Gói Tình Yêu - Code Heart', price: 50000, category: 'love', icon: 'fas fa-heart', desc: 'Mã nguồn tạo QR trái tim', downloadLink: 'https://example.com/', demo: '' }
-    ];
-    purchaseHistory = JSON.parse(localStorage.getItem('winter_purchases') || '[]');
-    const storedUser = localStorage.getItem('winter_user');
-    if(storedUser) currentUser = JSON.parse(storedUser);
-    renderUI();
-  }
-  function saveProducts() { localStorage.setItem('winter_products', JSON.stringify(products)); }
-  function saveHistory() { localStorage.setItem('winter_purchases', JSON.stringify(purchaseHistory)); }
-  function saveUser() { if(currentUser) localStorage.setItem('winter_user', JSON.stringify(currentUser)); else localStorage.removeItem('winter_user'); }
-  function renderUI() {
-    if(currentUser) { document.getElementById('walletDisplay').style.display = 'flex'; document.getElementById('walletAmount').innerText = currentUser.balance; document.getElementById('authBtn').style.display = 'none'; document.getElementById('logoutBtn').style.display = 'flex'; }
-    else { document.getElementById('walletDisplay').style.display = 'none'; document.getElementById('authBtn').style.display = 'flex'; document.getElementById('logoutBtn').style.display = 'none'; }
-    renderProducts(); renderHistory();
-    const isAdmin = currentUser && currentUser.isAdmin;
-    document.getElementById('adminPanel').style.display = isAdmin ? 'block' : 'none';
-    if(isAdmin) refreshAdminProducts();
-  }
-  function renderProducts(filter='all', keyword='') {
-    let filtered = products.filter(p => filter==='all' || p.category===filter);
-    if(keyword) filtered = filtered.filter(p => p.name.toLowerCase().includes(keyword.toLowerCase()) || p.desc.toLowerCase().includes(keyword.toLowerCase()));
-    document.getElementById('productsGrid').innerHTML = filtered.map(p => `<div class="product-card" onclick="openBuyModal('${p.id}')"><i class="${p.icon}" style="font-size:2rem; color:#ff8aae"></i><h3 style="margin:10px 0">${p.name}</h3><p>${p.desc}</p><div style="font-size:1.8rem; font-weight:800; margin:12px 0;">${p.price.toLocaleString()}đ</div><button class="btn-primary" style="width:100%;">Mua ngay</button></div>`).join('');
-  }
-  function renderHistory() { document.getElementById('historyList').innerHTML = purchaseHistory.map(h => `<div class="history-entry"><div><strong>${h.productName}</strong> - ${h.price.toLocaleString()}đ<br><small>${new Date(h.date).toLocaleString()}</small></div><button class="btn-outline" onclick="downloadProduct('${h.downloadLink}')">Tải xuống</button></div>`).join(''); }
-  window.downloadProduct = (link) => { if(link) window.open(link); else Swal.fire('Thông báo','Liên kết tải sẵn sàng','info'); };
-  window.navigateTo = (id) => { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
-  window.searchProducts = () => { const kw = document.getElementById('searchInput').value; renderProducts(document.querySelector('.filter-chip.active')?.getAttribute('data-cat') || 'all', kw); };
-  window.openBuyModal = (productId) => { if(!currentUser){ Swal.fire('Cần đăng nhập','Vui lòng đăng nhập để mua','warning'); openAuthModal(); return; } const prod = products.find(p=>p.id===productId); if(prod){ document.getElementById('buyProductName').innerText = prod.name; document.getElementById('buyProductPrice').innerHTML = prod.price.toLocaleString()+'đ'; document.getElementById('currentBalance').innerText = currentUser.balance; window._buyingProduct = prod; document.getElementById('buyModal').style.display = 'flex'; } };
-  window.confirmBuy = () => { if(!window._buyingProduct) return; if(currentUser.balance >= window._buyingProduct.price){ currentUser.balance -= window._buyingProduct.price; purchaseHistory.unshift({ productName: window._buyingProduct.name, price: window._buyingProduct.price, downloadLink: window._buyingProduct.downloadLink, date: new Date().toISOString() }); saveUser(); saveHistory(); renderUI(); canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ff88bb', '#ff4d7a'] }); Swal.fire('Thành công','Mua thành công!','success'); closeBuyModal(); } else Swal.fire('Lỗi','Số dư không đủ','error'); };
-  window.closeBuyModal = () => { document.getElementById('buyModal').style.display = 'none'; };
-  window.openAuthModal = () => { document.getElementById('authModal').style.display = 'flex'; };
-  window.closeAuthModal = () => { document.getElementById('authModal').style.display = 'none'; };
-  window.switchAuth = (type) => { document.getElementById('loginForm').style.display = type==='login'?'block':'none'; document.getElementById('registerForm').style.display = type==='register'?'block':'none'; };
-  window.login = () => { const uname = document.getElementById('loginUsername').value.trim(); const pwd = document.getElementById('loginPassword').value; const stored = localStorage.getItem(`user_${uname}`); if(stored){ const user = JSON.parse(stored); if(user.password === pwd){ currentUser = { username: user.username, balance: user.balance, isAdmin: user.isAdmin || false }; saveUser(); closeAuthModal(); renderUI(); canvasConfetti({ particleCount: 100, spread: 50, origin: { y: 0.5 } }); Swal.fire('Đăng nhập thành công',`Chào ${uname}`,'success'); } else Swal.fire('Sai mật khẩu','','error'); } else Swal.fire('Tài khoản không tồn tại','','error'); };
-  window.register = () => { const uname = document.getElementById('regUsername').value.trim(); const pwd = document.getElementById('regPassword').value; const confirm = document.getElementById('regConfirm').value; if(!uname || !pwd) { Swal.fire('Lỗi','Vui lòng điền đầy đủ','error'); return; } if(pwd !== confirm) { Swal.fire('Lỗi','Mật khẩu không khớp','error'); return; } if(localStorage.getItem(`user_${uname}`)) { Swal.fire('Lỗi','Tên đã tồn tại','error'); return; } const newUser = { username: uname, password: pwd, balance: 2000, isAdmin: false }; localStorage.setItem(`user_${uname}`, JSON.stringify(newUser)); currentUser = { username: uname, balance: 2000, isAdmin: false }; saveUser(); closeAuthModal(); renderUI(); canvasConfetti({ particleCount: 150, spread: 60, origin: { y: 0.5 } }); Swal.fire('Đăng ký thành công','Nhận 2000đ','success'); };
-  window.logout = () => { currentUser = null; saveUser(); renderUI(); };
-  window.requestDeposit = () => { Swal.fire('Yêu cầu nạp','Đã gửi đến admin','info'); };
-  window.generateHeartQR = () => { const text = document.getElementById('qrHeartContent').value; if(!text){ Swal.fire('Lỗi','Nhập nội dung','error'); return; } document.getElementById('qrCodeContainer').innerHTML = ''; new QRCode(document.getElementById('qrCodeContainer'), { text, width: 200, height: 200 }); document.getElementById('qrHeartResult').style.display = 'block'; };
-  window.downloadHeartQR = () => { const canvas = document.querySelector('#qrCodeContainer canvas'); if(canvas){ const link = document.createElement('a'); link.download = 'heart_qr.png'; link.href = canvas.toDataURL(); link.click(); } else Swal.fire('Chưa có QR','','error'); };
-  window.addProduct = () => { if(!currentUser?.isAdmin){ Swal.fire('Cấm truy cập','','error'); return; } const name = document.getElementById('prodName').value, price = parseInt(document.getElementById('prodPrice').value); if(!name || !price){ Swal.fire('Thiếu thông tin','','warning'); return; } const file = document.getElementById('prodDemoFile').files[0]; let demoUrl = file ? URL.createObjectURL(file) : ''; products.push({ id: 'p'+Date.now(), name, price, category: document.getElementById('prodCategory').value, icon: document.getElementById('prodIcon').value, desc: document.getElementById('prodDesc').value, downloadLink: document.getElementById('prodDownloadLink').value, demo: demoUrl }); saveProducts(); renderUI(); Swal.fire('Thành công','Đã thêm','success'); };
-  window.refreshAdminProducts = () => { const grid = document.getElementById('adminProductsGrid'); if(grid) grid.innerHTML = products.map(p => `<div class="glass-card" style="padding:1rem"><b>${p.name}</b> - ${p.price}đ<br><button class="btn-outline" onclick="deleteProduct('${p.id}')">Xóa</button></div>`).join(''); };
-  window.deleteProduct = (id) => { products = products.filter(p => p.id !== id); saveProducts(); refreshAdminProducts(); renderProducts(); Swal.fire('Đã xóa','','success'); };
-  // Chatbot
-  function addBotMsg(txt){ const div=document.createElement('div'); div.innerHTML=`<i class="fas fa-robot"></i> ${txt}`; div.style.margin='8px 0'; document.getElementById('chatbotMessages').appendChild(div); document.getElementById('chatbotMessages').scrollTop=document.getElementById('chatbotMessages').scrollHeight; }
-  document.getElementById('sendChatbotBtn')?.addEventListener('click',()=>{ const inp=document.getElementById('chatbotInput'); const q=inp.value.trim(); if(!q) return; const div=document.createElement('div'); div.innerHTML=`<i class="fas fa-user"></i> ${q}`; div.style.margin='8px 0'; div.style.textAlign='right'; document.getElementById('chatbotMessages').appendChild(div); inp.value=''; setTimeout(()=>{ let reply='Cảm ơn bạn! Bạn muốn biết về sản phẩm hay nạp tiền?'; if(q.includes('sản phẩm')) reply='Shop có tool auto, web MMO, code tình yêu giá rẻ!'; else if(q.includes('nạp')) reply='Vui lòng vào mục Nạp tiền, chuyển khoản BIDV.'; else if(q.includes('admin')) reply='Liên hệ Facebook HuuDat.'; addBotMsg(reply); },300); });
-  document.getElementById('chatbotToggle')?.addEventListener('click',()=>{ document.getElementById('chatbotWidget').style.display='block'; });
-  document.getElementById('closeChatbotBtn')?.addEventListener('click',()=>{ document.getElementById('chatbotWidget').style.display='none'; });
-  // Music
-  const music = document.getElementById('bgMusic'), playBtn = document.getElementById('playPauseBtn'); playBtn.addEventListener('click',()=>{ if(music.paused){ music.play(); playBtn.classList.remove('fa-play'); playBtn.classList.add('fa-pause'); } else { music.pause(); playBtn.classList.remove('fa-pause'); playBtn.classList.add('fa-play'); } });
-  // Filters
-  function renderFilters(){ const cats = ['all','python','website','love','qrlove','card']; document.getElementById('categoryFilters').innerHTML = cats.map(cat => `<div class="filter-chip ${cat==='all'?'active':''}" data-cat="${cat}" onclick="setFilter('${cat}')">${cat.toUpperCase()}</div>`).join(''); }
-  window.setFilter = (cat) => { document.querySelectorAll('.filter-chip').forEach(chip=>chip.classList.remove('active')); document.querySelector(`.filter-chip[data-cat="${cat}"]`).classList.add('active'); renderProducts(cat, document.getElementById('searchInput').value); };
-  window.closeDemoModal = () => { document.getElementById('demoModal').style.display = 'none'; };
-  // Typing effect
-  const sloganText = "Nơi chia sẻ code giá rẻ & tài liệu lập trình chất lượng ☁️";
-  let i = 0; function typeWriter() { if(i < sloganText.length) { document.getElementById('slogan').innerHTML += sloganText.charAt(i); i++; setTimeout(typeWriter, 50); } } typeWriter();
-  // Scroll reveal
-  const reveals = document.querySelectorAll('.reveal');
-  function revealScroll() { for(let el of reveals) { const windowHeight = window.innerHeight, revealTop = el.getBoundingClientRect().top, revealPoint = 100; if(revealTop < windowHeight - revealPoint) el.classList.add('active'); } }
-  window.addEventListener('scroll', revealScroll); revealScroll();
-  // Tạo tuyết và trái tim
-  function createSnowAndHearts(){ setInterval(()=>{ const type = Math.random() > 0.7 ? 'heart' : 'snow'; const el = document.createElement('i'); el.className = type === 'heart' ? 'fas fa-heart floating-heart' : 'fas fa-snowflake snow-flake'; el.style.left = Math.random() * 100 + '%'; el.style.fontSize = (Math.random() * 18 + 8) + 'px'; el.style.color = type === 'heart' ? '#ff88bb' : '#aaddff'; el.style.animationDuration = Math.random() * 5 + 4 + 's'; document.body.appendChild(el); setTimeout(()=>el.remove(), 6000); }, 700); }
-  createSnowAndHearts();
-  // Particles nền
-  for(let i=0;i<60;i++){ let p=document.createElement('div'); p.classList.add('particle'); let s=Math.random()*6+2; p.style.width=s+'px'; p.style.height=s+'px'; p.style.left=Math.random()*100+'%'; p.style.animationDuration=Math.random()*12+8+'s'; p.style.animationDelay=Math.random()*10+'s'; document.getElementById('particlesContainer').appendChild(p); }
-  // Hiệu ứng rung lỗi input
-  document.querySelectorAll('input').forEach(inp => inp.addEventListener('invalid', (e) => { e.target.classList.add('shake'); setTimeout(()=>e.target.classList.remove('shake'),500); }));
-  // Loader giả
-  window.showLoader = (text, duration=800) => { const loader = document.getElementById('dogLoader'); const progress = document.getElementById('loaderProgress'); document.getElementById('loaderText').innerText = text; loader.classList.add('active'); let width=0; const interval = setInterval(()=>{ width+=10; progress.style.width = width+'%'; if(width>=100) clearInterval(interval); }, duration/10); setTimeout(()=>{ loader.classList.remove('active'); progress.style.width='0%'; }, duration); };
-  // Ghi đè một số hàm có loader
-  const origBuy = window.confirmBuy; window.confirmBuy = () => { showLoader('🐕 Đang xử lý giao dịch...', 600); setTimeout(origBuy, 600); };
-  loadData(); renderFilters();
-</script>
-<style>
-  .modal { align-items: center; justify-content: center; }
-  .section-title { font-size: 2rem; font-weight: 700; }
-  .dog-loader-overlay { visibility: hidden; opacity: 0; transition: 0.2s; }
-  .dog-loader-overlay.active { visibility: visible; opacity: 1; }
-  #particlesContainer { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: -1; }
-</style>
-</body>
-</html>thêm dòng này  <script src="./assets/js/winter-app.js"></script> <script src="./assets/js/winter-data.js"></script>
+      // Biến đếm số lần click vào logo (bí mật kích hoạt admin)
+      let logoClickCount = 0;
+      let logoClickTimeout = null;
+
+      function setupSecretAdminTrigger() {
+        const logoElement = document.getElementById("secretAdminLogo");
+        if (!logoElement) return;
+        logoElement.addEventListener("click", (e) => {
+          e.stopPropagation();
+          logoClickCount++;
+          if (logoClickTimeout) clearTimeout(logoClickTimeout);
+          logoClickTimeout = setTimeout(() => {
+            logoClickCount = 0;
+          }, 2000); // 2 giây để nhấp 3 lần
+          if (logoClickCount >= 3) {
+            logoClickCount = 0;
+            if (logoClickTimeout) clearTimeout(logoClickTimeout);
+            // Hiển thị modal nhập mật khẩu admin
+            openAdminPasswordModal();
+          }
+        });
+      }
+
+      function loadAllData() {
+        const storedProds = localStorage.getItem("winter_products_v2");
+        products = storedProds
+          ? JSON.parse(storedProds)
+          : [
+              {
+                id: "p1",
+                name: "Tool Auto Like Facebook",
+                price: 99000,
+                category: "python",
+                icon: "fab fa-python",
+                desc: "Auto like, thả tim cực mạnh",
+                downloadLink: "https://drive.google.com/",
+                demoUrl: "",
+              },
+              {
+                id: "p2",
+                name: "Source Web MMO Game",
+                price: 199000,
+                category: "website",
+                icon: "fas fa-globe",
+                desc: "Full code web kiếm tiền",
+                downloadLink: "https://example.com/",
+                demoUrl: "",
+              },
+              {
+                id: "p3",
+                name: "Gói Tình Yêu - QR Heart",
+                price: 50000,
+                category: "love",
+                icon: "fas fa-heart",
+                desc: "Mã nguồn tạo QR trái tim",
+                downloadLink: "https://example.com/",
+                demoUrl: "",
+              },
+            ];
+        purchaseHistory = JSON.parse(
+          localStorage.getItem("winter_purchases_v2") || "[]",
+        );
+        const storedUser = localStorage.getItem("winter_user_v2");
+        if (storedUser) currentUser = JSON.parse(storedUser);
+        renderMainUI();
+      }
+
+      function saveProducts() {
+        localStorage.setItem("winter_products_v2", JSON.stringify(products));
+      }
+      function saveHistory() {
+        localStorage.setItem(
+          "winter_purchases_v2",
+          JSON.stringify(purchaseHistory),
+        );
+      }
+      function saveCurrentUser() {
+        if (currentUser)
+          localStorage.setItem("winter_user_v2", JSON.stringify(currentUser));
+        else localStorage.removeItem("winter_user_v2");
+      }
+
+      function renderMainUI() {
+        if (currentUser) {
+          document.getElementById("walletBox").style.display = "flex";
+          document.getElementById("walletValue").innerText =
+            currentUser.balance;
+          document.getElementById("authBtnNav").style.display = "none";
+          document.getElementById("logoutBtnNav").style.display = "flex";
+        } else {
+          document.getElementById("walletBox").style.display = "none";
+          document.getElementById("authBtnNav").style.display = "flex";
+          document.getElementById("logoutBtnNav").style.display = "none";
+        }
+        renderProductsGrid();
+        renderHistoryUI();
+        const adminPanel = document.getElementById("adminPanel");
+        if (adminPanel)
+          adminPanel.style.display = isAdminMode ? "block" : "none";
+        if (isAdminMode) refreshAdminList();
+      }
+
+      async function renderProductsGrid(filterCat = "all", keyword = "") {
+        let filtered = products.filter(
+          (p) => filterCat === "all" || p.category === filterCat,
+        );
+        if (keyword)
+          filtered = filtered.filter(
+            (p) =>
+              p.name.toLowerCase().includes(keyword.toLowerCase()) ||
+              p.desc.toLowerCase().includes(keyword.toLowerCase()),
+          );
+        const grid = document.getElementById("productsGrid");
+        if (!grid) return;
+        grid.style.opacity = "0";
+        grid.style.transform = "translateY(20px)";
+        setTimeout(() => {
+          grid.innerHTML = filtered
+            .map(
+              (p, idx) =>
+                `<div class="card-luxury product-item" style="padding:1.5rem; animation-delay:${idx * 0.05}s"><i class="${p.icon}" style="font-size:2rem; color:#ff8aae"></i><h3 style="margin:10px 0">${p.name}</h3><p>${p.desc}</p><div style="font-size:1.8rem; font-weight:800; margin:12px 0;">${p.price.toLocaleString()}đ</div><div style="display: flex; gap: 0.5rem; justify-content: space-between;"><button class="btn-gold" style="flex:1;" onclick="openBuyModal('${p.id}')">Mua ngay</button>${p.demoUrl ? `<button class="btn-glow" style="flex:1;" onclick="showDemo('${p.id}')">Xem demo</button>` : ""}</div></div>`,
+            )
+            .join("");
+          grid.style.opacity = "1";
+          grid.style.transform = "translateY(0)";
+        }, 150);
+      }
+
+      function renderHistoryUI() {
+        const historyDiv = document.getElementById("historyList");
+        if (!historyDiv) return;
+        historyDiv.innerHTML = purchaseHistory
+          .map(
+            (h, idx) =>
+              `<div class="history-card" style="animation-delay:${idx * 0.05}s"><div><strong>${h.productName}</strong> - ${h.price.toLocaleString()}đ<br><small>${new Date(h.date).toLocaleString()}</small></div><button class="btn-glow" onclick="downloadItem('${h.downloadLink}')">Tải xuống</button></div>`,
+          )
+          .join("");
+      }
+
+      window.downloadItem = (link) => {
+        if (link) window.open(link);
+        else Swal.fire("Thông báo", "Liên kết tải sẵn sàng", "info");
+      };
+
+      window.showDemo = (productId) => {
+        const prod = products.find((p) => p.id === productId);
+        if (!prod || !prod.demoUrl) {
+          Swal.fire("Thông báo", "Sản phẩm này chưa có demo", "info");
+          return;
+        }
+        const demoContainer = document.getElementById("demoModalContent");
+        let html = "";
+        const url = prod.demoUrl;
+        if (url.includes("youtube.com/watch") || url.includes("youtu.be")) {
+          let videoId = "";
+          if (url.includes("youtu.be"))
+            videoId = url.split("youtu.be/")[1].split("?")[0];
+          else if (url.includes("watch?v="))
+            videoId = url.split("watch?v=")[1].split("&")[0];
+          if (videoId)
+            html = `<iframe class="demo-iframe" src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>`;
+          else
+            html = `<video controls src="${url}" style="max-width:100%; max-height:350px;"></video>`;
+        } else if (url.match(/\.(mp4|webm|ogg)$/i)) {
+          html = `<video controls src="${url}" style="max-width:100%; max-height:350px;"></video>`;
+        } else if (url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+          html = `<img src="${url}" alt="Demo">`;
+        } else {
+          html = `<iframe class="demo-iframe" src="${url}" allowfullscreen style="width:100%; height:400px;"></iframe>`;
+        }
+        demoContainer.innerHTML = html;
+        document.getElementById("demoModal").style.display = "flex";
+      };
+      window.closeDemoModal = () => {
+        document.getElementById("demoModal").style.display = "none";
+      };
+
+      // Hàm loader vui nhộn
+      const funnyMessages = [
+        {
+          icon: "😂",
+          text: "Đang tải... chờ xíu cưng ơi!",
+          sub: "Tốc độ rùa bò =))",
+        },
+        {
+          icon: "🤣",
+          text: "Loading... đừng có gấp!",
+          sub: "Sắp xong rồi nha ba...",
+        },
+        {
+          icon: "😜",
+          text: "Trời ơi, đợi tí đi má!",
+          sub: "Mạng như con chuột chạy",
+        },
+        {
+          icon: "🥴",
+          text: "Sắp xong... thề luôn á!",
+          sub: "Không tin thì nhấn F5 =)))",
+        },
+        {
+          icon: "😎",
+          text: "Đang kéo code từ thiên hà...",
+          sub: "Cà phê đã có, chờ tí",
+        },
+      ];
+
+      async function navigateWithFunnyLoader(sectionId) {
+        const loader = document.getElementById("funnyLoader");
+        const iconEl = document.getElementById("loaderFunIcon");
+        const textEl = document.getElementById("loaderFunText");
+        const subEl = document.getElementById("loaderSubText");
+        const progressFill = document.getElementById("loaderProgressFill");
+        const randomMsg =
+          funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+        if (iconEl) iconEl.innerHTML = randomMsg.icon;
+        if (textEl) textEl.innerHTML = randomMsg.text;
+        if (subEl) subEl.innerHTML = randomMsg.sub;
+        if (loader) loader.classList.add("active");
+        let width = 0;
+        const interval = setInterval(() => {
+          width += 10;
+          if (progressFill) progressFill.style.width = width + "%";
+          if (width >= 100) clearInterval(interval);
+        }, 60);
+        await new Promise((resolve) => setTimeout(resolve, 650));
+        const target = document.getElementById(sectionId);
+        if (target)
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        setTimeout(() => {
+          if (loader) loader.classList.remove("active");
+          if (progressFill) progressFill.style.width = "0%";
+        }, 300);
+      }
+
+      window.navigateWithFunnyLoader = navigateWithFunnyLoader;
+      window.searchProducts = () => {
+        const kw = document.getElementById("searchInput").value;
+        renderProductsGrid(
+          document.querySelector(".chip.active")?.getAttribute("data-cat") ||
+            "all",
+          kw,
+        );
+      };
+
+      // Mua hàng
+      window.openBuyModal = (productId) => {
+        if (!currentUser) {
+          Swal.fire("Cần đăng nhập", "Vui lòng đăng nhập", "warning");
+          openAuthModal();
+          return;
+        }
+        const prod = products.find((p) => p.id === productId);
+        if (prod) {
+          document.getElementById("buyProdName").innerText = prod.name;
+          document.getElementById("buyProdPrice").innerHTML =
+            prod.price.toLocaleString() + "đ";
+          document.getElementById("userBalanceShow").innerText =
+            currentUser.balance;
+          window._buyingProd = prod;
+          document.getElementById("buyModalWin").style.display = "flex";
+        }
+      };
+
+      window.confirmPurchase = () => {
+        if (!window._buyingProd) return;
+        if (currentUser.balance >= window._buyingProd.price) {
+          currentUser.balance -= window._buyingProd.price;
+          purchaseHistory.unshift({
+            productName: window._buyingProd.name,
+            price: window._buyingProd.price,
+            downloadLink: window._buyingProd.downloadLink,
+            date: new Date().toISOString(),
+          });
+          saveCurrentUser();
+          saveHistory();
+          renderMainUI();
+          canvasConfetti({
+            particleCount: 180,
+            spread: 80,
+            origin: { y: 0.6 },
+            colors: ["#ff88bb", "#ff4d7a"],
+          });
+          Swal.fire("Thành công", "Mua thành công!", "success");
+          closeBuyModal();
+        } else Swal.fire("Lỗi", "Số dư không đủ", "error");
+      };
+
+      window.closeBuyModal = () => {
+        document.getElementById("buyModalWin").style.display = "none";
+      };
+      window.openAuthModal = () => {
+        document.getElementById("authModalWin").style.display = "flex";
+      };
+      window.closeAuthModal = () => {
+        document.getElementById("authModalWin").style.display = "none";
+      };
+      window.switchAuth = (type) => {
+        document.getElementById("loginFormDiv").style.display =
+          type === "login" ? "block" : "none";
+        document.getElementById("registerFormDiv").style.display =
+          type === "register" ? "block" : "none";
+      };
+
+      // Đăng nhập user
+      window.loginUser = () => {
+        const un = document.getElementById("loginUser").value.trim();
+        const pw = document.getElementById("loginPass").value;
+        const stored = localStorage.getItem(`user_${un}`);
+        if (stored) {
+          const user = JSON.parse(stored);
+          if (user.password === pw) {
+            currentUser = {
+              username: user.username,
+              balance: user.balance,
+              isAdmin: false,
+            };
+            saveCurrentUser();
+            closeAuthModal();
+            renderMainUI();
+            canvasConfetti({ particleCount: 120, spread: 60 });
+            Swal.fire("Đăng nhập thành công", `Chào ${un}`, "success");
+          } else Swal.fire("Sai mật khẩu", "", "error");
+        } else Swal.fire("Tài khoản không tồn tại", "", "error");
+      };
+
+      window.registerUser = () => {
+        const uname = document.getElementById("regUser").value.trim();
+        const pwd = document.getElementById("regPass").value;
+        const cf = document.getElementById("regConfirmPass").value;
+        if (!uname || !pwd) {
+          Swal.fire("Lỗi", "Điền đầy đủ", "error");
+          return;
+        }
+        if (pwd !== cf) {
+          Swal.fire("Lỗi", "Mật khẩu không khớp", "error");
+          return;
+        }
+        if (localStorage.getItem(`user_${uname}`)) {
+          Swal.fire("Lỗi", "Tên đã tồn tại", "error");
+          return;
+        }
+        const newUser = {
+          username: uname,
+          password: pwd,
+          balance: 2000,
+          isAdmin: false,
+        };
+        localStorage.setItem(`user_${uname}`, JSON.stringify(newUser));
+        currentUser = { username: uname, balance: 2000, isAdmin: false };
+        saveCurrentUser();
+        closeAuthModal();
+        renderMainUI();
+        canvasConfetti({ particleCount: 180, spread: 70 });
+        Swal.fire("Đăng ký thành công", "Nhận 2000đ", "success");
+      };
+
+      window.logout = () => {
+        currentUser = null;
+        saveCurrentUser();
+        renderMainUI();
+      };
+      window.sendDepositReq = () => {
+        Swal.fire("Yêu cầu nạp", "Đã gửi đến admin", "info");
+      };
+
+      // QR code
+      window.genHeartQR = () => {
+        const text = document.getElementById("qrContent").value;
+        if (!text) {
+          Swal.fire("Lỗi", "Nhập nội dung", "error");
+          return;
+        }
+        document.getElementById("qrCanvas").innerHTML = "";
+        new QRCode(document.getElementById("qrCanvas"), {
+          text,
+          width: 200,
+          height: 200,
+        });
+        document.getElementById("qrResult").style.display = "block";
+      };
+      window.downloadQR = () => {
+        const canvas = document.querySelector("#qrCanvas canvas");
+        if (canvas) {
+          const a = document.createElement("a");
+          a.download = "heart_qr.png";
+          a.href = canvas.toDataURL();
+          a.click();
+        }
+      };
+
+      // Admin trigger bằng mật khẩu (đã loại bỏ nút admin trên navbar)
+      window.openAdminPasswordModal = () => {
+        document.getElementById("adminPasswordModal").style.display = "flex";
+      };
+      window.closeAdminPasswordModal = () => {
+        document.getElementById("adminPasswordModal").style.display = "none";
+        document.getElementById("adminPasswordInput").value = "";
+      };
+      window.verifyAdminPassword = () => {
+        const pwd = document.getElementById("adminPasswordInput").value;
+        if (pwd === ADMIN_PASSWORD) {
+          isAdminMode = true;
+          closeAdminPasswordModal();
+          renderMainUI();
+          Swal.fire("Thành công", "Đã mở chế độ Admin!", "success");
+          document
+            .getElementById("adminPanel")
+            .scrollIntoView({ behavior: "smooth" });
+        } else {
+          Swal.fire("Sai mật khẩu", "Vui lòng thử lại", "error");
+          document.getElementById("adminPasswordInput").value = "";
+        }
+      };
+
+      // Quản lý sản phẩm (admin)
+      window.addNewProduct = () => {
+        if (!isAdminMode) {
+          Swal.fire("Cấm", "Bạn chưa xác thực admin", "error");
+          return;
+        }
+        const name = document.getElementById("prodName").value,
+          price = parseInt(document.getElementById("prodPrice").value);
+        if (!name || !price) {
+          Swal.fire("Thiếu thông tin", "", "warning");
+          return;
+        }
+        let demoUrl = document.getElementById("prodDemoLink").value.trim();
+        const file = document.getElementById("prodDemoFile").files[0];
+        if (file) demoUrl = URL.createObjectURL(file);
+        products.push({
+          id: "p" + Date.now(),
+          name,
+          price,
+          category: document.getElementById("prodCategory").value,
+          icon: document.getElementById("prodIcon").value,
+          desc: document.getElementById("prodDesc").value,
+          downloadLink: document.getElementById("prodDownloadLink").value,
+          demoUrl: demoUrl || "",
+        });
+        saveProducts();
+        renderMainUI();
+        Swal.fire("Thành công", "Đã thêm sản phẩm", "success");
+      };
+
+      window.refreshAdminList = () => {
+        const container = document.getElementById("adminProductList");
+        if (container && isAdminMode)
+          container.innerHTML = products
+            .map(
+              (p) =>
+                `<div class="card-luxury" style="padding:1rem"><b>${p.name}</b> - ${p.price}đ<br>Demo: ${p.demoUrl ? "✅" : "❌"}<br><button class="btn-glow" onclick="deleteProd('${p.id}')">Xóa</button></div>`,
+            )
+            .join("");
+      };
+
+      window.deleteProd = (id) => {
+        if (!isAdminMode) return;
+        products = products.filter((p) => p.id !== id);
+        saveProducts();
+        refreshAdminList();
+        renderProductsGrid();
+        Swal.fire("Đã xóa", "", "success");
+      };
+
+      // Filter chips
+      function renderFilters() {
+        const cats = ["all", "python", "website", "love", "qrlove"];
+        const container = document.getElementById("filterChips");
+        if (container)
+          container.innerHTML = cats
+            .map(
+              (cat) =>
+                `<div class="chip ${cat === "all" ? "active" : ""}" data-cat="${cat}" onclick="setFilterCat('${cat}')">${cat.toUpperCase()}</div>`,
+            )
+            .join("");
+      }
+
+      window.setFilterCat = async (cat) => {
+        document
+          .querySelectorAll(".chip")
+          .forEach((c) => c.classList.remove("active"));
+        const activeChip = document.querySelector(`.chip[data-cat="${cat}"]`);
+        if (activeChip) activeChip.classList.add("active");
+        await renderProductsGrid(
+          cat,
+          document.getElementById("searchInput").value,
+        );
+      };
+
+      // Typing effect
+      const slogan = "✦ Nơi hội tụ code xịn, hiệu ứng hài hước bá đạo ✦";
+      let idx = 0;
+      function typeSlogan() {
+        const sloganEl = document.getElementById("sloganText");
+        if (sloganEl && idx < slogan.length) {
+          sloganEl.innerHTML += slogan.charAt(idx);
+          idx++;
+          setTimeout(typeSlogan, 45);
+        }
+      }
+      typeSlogan();
+
+      // Reveal on scroll
+      const revealSections = document.querySelectorAll(".reveal-section");
+      const checkReveal = () => {
+        revealSections.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight - 100) el.classList.add("revealed");
+        });
+      };
+      window.addEventListener("scroll", checkReveal);
+      checkReveal();
+
+      // Tạo hạt 3D
+      for (let i = 0; i < 70; i++) {
+        let p = document.createElement("div");
+        p.classList.add("particle-3d");
+        let size = Math.random() * 6 + 2;
+        p.style.width = size + "px";
+        p.style.height = size + "px";
+        p.style.left = Math.random() * 100 + "%";
+        p.style.animationDuration = Math.random() * 12 + 6 + "s";
+        p.style.animationDelay = Math.random() * 8 + "s";
+        document.getElementById("particleContainer").appendChild(p);
+      }
+
+      // Thả tim/tuyết
+      setInterval(() => {
+        const type = Math.random() > 0.6 ? "heart" : "snow";
+        const el = document.createElement("i");
+        el.className =
+          type === "heart" ? "fas fa-heart heart" : "fas fa-snowflake snow";
+        el.style.left = Math.random() * 100 + "%";
+        el.style.fontSize = Math.random() * 20 + 10 + "px";
+        el.style.color = type === "heart" ? "#ff88bb" : "#bbddff";
+        el.style.animationDuration = Math.random() * 5 + 4 + "s";
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 6000);
+      }, 800);
+
+      // Nhạc nền
+      const audio = document.getElementById("bgAudio"),
+        playBtnIcon = document.getElementById("playPauseIcon");
+      if (playBtnIcon)
+        playBtnIcon.addEventListener("click", () => {
+          if (audio.paused) {
+            audio.play();
+            playBtnIcon.classList.remove("fa-play");
+            playBtnIcon.classList.add("fa-pause");
+          } else {
+            audio.pause();
+            playBtnIcon.classList.remove("fa-pause");
+            playBtnIcon.classList.add("fa-play");
+          }
+        });
+
+      window.addEventListener("scroll", () => {
+        const nav = document.getElementById("mainNav");
+        if (nav) nav.classList.toggle("scrolled", window.scrollY > 60);
+      });
+
+      loadAllData();
+      renderFilters();
+      setupSecretAdminTrigger(); // Kích hoạt sự kiện click 3 lần vào logo
+    </script>
+  </body>
+</html>
